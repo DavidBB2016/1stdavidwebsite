@@ -473,6 +473,42 @@ a:hover {
   box-shadow: var(--focus);
 }
 
+/* Likes page */
+.stat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: radial-gradient(700px 220px at 20% 0%, rgba(255, 226, 122, 0.14), transparent 70%),
+    rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow);
+}
+
+.stat-kicker {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  font-weight: 750;
+}
+
+.stat-number {
+  margin: 6px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(46px, 6vw, 72px);
+  line-height: 1;
+}
+
+.stat-sub {
+  margin: 10px 0 0;
+  color: var(--faint);
+  font-size: 13px;
+}
+
 @media (max-width: 920px) {
   .quick-grid {
     grid-template-columns: 1fr;

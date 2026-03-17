@@ -4,11 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
-    <title>Videos | DAVID'S football website</title>
-    <meta
-      name="description"
-      content="Watch and share football videos. Add YouTube/Vimeo links to your gallery."
-    />
+    <title>Likes | DAVID'S football website</title>
+    <meta name="description" content="See how many people liked DAVID'S football website." />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -40,58 +37,31 @@
     <main id="main" class="page">
       <div class="wrap">
         <div class="page-head">
-          <h1 data-i18n="h_videos">Videos</h1>
+          <h1 data-i18n="h_likes">Likes</h1>
           <p>
-            Add YouTube or Vimeo links and they will appear in your video
-            gallery. Saved on this device.
+            This shows the total likes. If you are using the Wi‑Fi server
+            (`server.rb`), everyone on Wi‑Fi shares the same like count.
           </p>
         </div>
 
         <section class="panel">
           <div class="panel-body">
-            <form class="form" data-video-form>
-              <fieldset class="fieldset">
-                <legend>Add a video</legend>
-                <div class="grid-2">
-                  <label>
-                    Title <span class="req">*</span>
-                    <input name="title" required placeholder="Example: My football skills" />
-                  </label>
-                  <label>
-                    Video link <span class="req">*</span>
-                    <input
-                      name="url"
-                      required
-                      placeholder="Paste a YouTube/Vimeo link"
-                      inputmode="url"
-                    />
-                  </label>
-                </div>
-                <label>
-                  Description
-                  <textarea name="description" placeholder="Optional notes"></textarea>
-                </label>
-                <p class="hint">
-                  Tip: Use Share links from YouTube (youtu.be / youtube.com) or
-                  Vimeo.
-                </p>
-              </fieldset>
-
-              <div class="panel-foot">
-                <span class="small muted">Videos are saved in your browser.</span>
-                <div class="cta-row" style="margin: 0">
-                  <button class="btn btn-primary" type="submit" data-i18n="btn_add_video">Add video</button>
-                </div>
+            <div class="stat-card">
+              <div>
+                <p class="stat-kicker">Total likes</p>
+                <p class="stat-number" data-likes-total>0</p>
+                <p class="stat-sub" data-likes-mode>Loading...</p>
               </div>
-            </form>
-
-            <div class="section" style="padding-bottom: 0">
-              <div class="section-head">
-                <h2>Your gallery</h2>
-                <p>Only you (and people using your device) see these videos.</p>
+              <div class="cta-row" style="margin: 0">
+                <button class="btn btn-secondary" type="button" data-likes-refresh>
+                  Refresh
+                </button>
+                <a class="btn btn-ghost" href="./index.html">Home</a>
               </div>
-              <div class="video-grid" data-video-list></div>
             </div>
+            <p class="mono" style="margin-top: 10px">
+              Tip: Use the Like button in the top menu to add your like.
+            </p>
           </div>
         </section>
       </div>
@@ -107,3 +77,4 @@
     <script type="module" src="./app.js"></script>
   </body>
 </html>
+

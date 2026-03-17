@@ -603,6 +603,7 @@ function setupLanguageSwitcher() {
       nav_comments: "Comments",
       nav_social: "Social",
       nav_search: "Search",
+      nav_likes: "Likes",
       nav_about: "About Me",
       h_index: "Get your team playing more football.",
       h_team_signup: "Team signup",
@@ -613,6 +614,7 @@ function setupLanguageSwitcher() {
       h_comments: "Comments",
       h_social: "Social",
       h_search: "Football search",
+      h_likes: "Likes",
       h_about: "About me",
       btn_signup: "Sign up your team",
       btn_find_opponents: "Find opponents",
@@ -635,6 +637,7 @@ function setupLanguageSwitcher() {
       nav_comments: "Comentarii",
       nav_social: "Social",
       nav_search: "Cauta",
+      nav_likes: "Like-uri",
       nav_about: "Despre mine",
       h_index: "Fa ca echipa ta sa joace mai mult fotbal.",
       h_team_signup: "Inscriere echipa",
@@ -645,6 +648,7 @@ function setupLanguageSwitcher() {
       h_comments: "Comentarii",
       h_social: "Social",
       h_search: "Cautare fotbal",
+      h_likes: "Like-uri",
       h_about: "Despre mine",
       btn_signup: "Inscrie echipa",
       btn_find_opponents: "Gaseste adversari",
@@ -667,6 +671,7 @@ function setupLanguageSwitcher() {
       nav_comments: "Comentarios",
       nav_social: "Social",
       nav_search: "Buscar",
+      nav_likes: "Me gusta",
       nav_about: "Sobre mi",
       h_index: "Haz que tu equipo juegue mas futbol.",
       h_team_signup: "Registro del equipo",
@@ -677,6 +682,7 @@ function setupLanguageSwitcher() {
       h_comments: "Comentarios",
       h_social: "Social",
       h_search: "Buscar futbol",
+      h_likes: "Me gusta",
       h_about: "Sobre mi",
       btn_signup: "Registrar equipo",
       btn_find_opponents: "Encontrar rivales",
@@ -699,6 +705,7 @@ function setupLanguageSwitcher() {
       nav_comments: "Commentaires",
       nav_social: "Social",
       nav_search: "Rechercher",
+      nav_likes: "J'aime",
       nav_about: "A propos de moi",
       h_index: "Fais jouer ton equipe plus souvent.",
       h_team_signup: "Inscription equipe",
@@ -709,6 +716,7 @@ function setupLanguageSwitcher() {
       h_comments: "Commentaires",
       h_social: "Social",
       h_search: "Recherche football",
+      h_likes: "J'aime",
       h_about: "A propos de moi",
       btn_signup: "Inscrire l'equipe",
       btn_find_opponents: "Trouver des adversaires",
@@ -1322,6 +1330,37 @@ function onFootballSearchPage() {
   });
 }
 
+function onLikesPage() {
+  const totalEl = document.querySelector("[data-likes-total]");
+  const modeEl = document.querySelector("[data-likes-mode]");
+  const refreshBtn = document.querySelector("[data-likes-refresh]");
+  if (!totalEl || !modeEl) return;
+
+  function localCount() {
+    return Number(localStorage.getItem("kickoffhub_likes_local_count_v1") || "0") || 0;
+  }
+
+  async function refresh() {
+    try {
+      const res = await fetch(`/likes`, { cache: "no-store" });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const data = await res.json();
+      if (!data || data.ok !== true || typeof data.likes !== "number") throw new Error("bad payload");
+      totalEl.textContent = String(Math.max(0, data.likes));
+      modeEl.textContent = "Shared on Wi-Fi server (server.rb)";
+      return;
+    } catch {
+      const n = localCount();
+      totalEl.textContent = String(Math.max(0, n));
+      modeEl.textContent = "Local on this device (no server)";
+    }
+  }
+
+  refreshBtn?.addEventListener("click", refresh);
+  refresh();
+  window.setInterval(refresh, 6000);
+}
+
 function setupFooterSocials() {
   const foot = document.querySelector(".site-footer .footer-inner");
   if (!foot) return;
@@ -1701,3 +1740,4 @@ onCommentsPage();
 onSocialPage();
 setupFooterSocials();
 onFootballSearchPage();
+onLikesPage();
