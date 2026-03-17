@@ -45,6 +45,11 @@ body {
   overflow-x: hidden;
 }
 
+/* Give fixed bottom controls room on mobile. */
+.page {
+  padding-bottom: 40px;
+}
+
 /* Chalk-line pitch pattern */
 body::before {
   content: "";
@@ -214,6 +219,51 @@ a:hover {
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.nav-toggle:focus {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.nav-toggle-icon {
+  width: 18px;
+  height: 12px;
+  position: relative;
+  display: inline-block;
+}
+
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.nav-toggle-icon::before {
+  top: 0;
+  box-shadow: 0 5px 0 rgba(255, 255, 255, 0.85);
+}
+
+.nav-toggle-icon::after {
+  bottom: 0;
 }
 
 .nav a {
@@ -1120,6 +1170,45 @@ textarea:focus {
   .footer-inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* Prevent iOS Safari zoom on focus (needs 16px inputs). */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Mobile menu */
+  .nav-toggle {
+    display: inline-flex;
+    align-self: flex-start;
+  }
+
+  .nav {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.16);
+  }
+
+  .site-header.nav-open .nav {
+    display: flex;
+  }
+
+  .nav a {
+    width: 100%;
+    padding: 12px 12px;
+  }
+
+  .online-pill,
+  .lang-pill,
+  .like-pill {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .tts-bar {

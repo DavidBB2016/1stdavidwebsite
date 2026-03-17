@@ -765,6 +765,56 @@ function setupLanguageSwitcher() {
   });
 }
 
+function setupMobileNav() {
+  const header = document.querySelector(".site-header");
+  const nav = document.querySelector(".site-header .nav");
+  const headerInner = document.querySelector(".site-header .header-inner");
+  if (!header || !nav || !headerInner) return;
+  if (document.querySelector("[data-nav-toggle]")) return;
+
+  const navId = "site-nav";
+  nav.id = nav.id || navId;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "nav-toggle";
+  btn.setAttribute("data-nav-toggle", "");
+  btn.setAttribute("aria-controls", nav.id);
+  btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = `
+    <span class="nav-toggle-icon" aria-hidden="true"></span>
+    <span class="nav-toggle-text">Menu</span>
+  `;
+
+  // Insert toggle before the nav so it sits in the header row.
+  headerInner.insertBefore(btn, nav);
+
+  function setOpen(open) {
+    header.classList.toggle("nav-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  btn.addEventListener("click", () => {
+    const open = !header.classList.contains("nav-open");
+    setOpen(open);
+  });
+
+  nav.addEventListener("click", (e) => {
+    const a = e.target?.closest?.("a");
+    if (!a) return;
+    setOpen(false);
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+
+  window.addEventListener("resize", () => {
+    // If we switch back to desktop width, ensure menu isn't stuck open.
+    if (window.innerWidth > 720) setOpen(false);
+  });
+}
+
 function setupLikeButton() {
   const header = document.querySelector(".site-header .header-inner");
   if (!header) return;
@@ -1729,6 +1779,7 @@ setupRevealStagger();
 setupBackgroundLegend();
 setupPresenceCounter();
 setupLanguageSwitcher();
+setupMobileNav();
 setupLikeButton();
 setupTts();
 onTeamSignupPage();
