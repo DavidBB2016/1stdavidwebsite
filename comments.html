@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Comments | DAVID'S football website</title>
+    <meta
+      name="description"
+      content="Leave a comment on DAVID'S football website."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./index.html" aria-label="Home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-title">DAVID'S football website</span>
+            <span class="brand-sub">Friendlies & Tournaments</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="./team-signup.html" data-i18n="nav_team_signup">Team Signup</a>
+          <a href="./match-request.html" data-i18n="nav_match_request">Match Request</a>
+          <a href="./browse.html" data-i18n="nav_browse">Browse</a>
+          <a href="./tournaments.html" data-i18n="nav_tournaments">Tournaments</a>
+          <a href="./videos.html" data-i18n="nav_videos">Videos</a>
+          <a href="./comments.html" data-i18n="nav_comments">Comments</a>
+          <a href="./social.html" data-i18n="nav_social">Social</a>
+          <a href="./search.html" data-i18n="nav_search">Search</a>
+          <a href="./about.html" data-i18n="nav_about">About Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="page">
+      <div class="wrap">
+        <div class="page-head">
+          <h1 data-i18n="h_comments">Comments</h1>
+          <p>
+            Leave a message for David. If you are connected through the home
+            Wi‑Fi server, everyone can see the comments here.
+          </p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-body">
+            <form class="form" data-comments-form action="/comments/add-form" method="post">
+              <fieldset class="fieldset">
+                <legend>Write a comment</legend>
+                <div class="grid-2">
+                  <label>
+                    Your name <span class="req">*</span>
+                    <input name="name" required placeholder="Example: Alex" />
+                  </label>
+                  <label>
+                    Topic
+                    <input name="topic" placeholder="Example: Friendly match" />
+                  </label>
+                </div>
+                <label>
+                  Comment <span class="req">*</span>
+                  <textarea
+                    name="message"
+                    required
+                    maxlength="400"
+                    placeholder="Write something nice..."
+                  ></textarea>
+                </label>
+                <p class="hint">Max 400 characters.</p>
+              </fieldset>
+
+              <div class="panel-foot">
+                <span class="small muted">Be kind. No personal info.</span>
+                <div class="cta-row" style="margin: 0">
+                  <button class="btn btn-primary" type="submit" data-i18n="btn_post_comment">Post comment</button>
+                </div>
+              </div>
+            </form>
+
+            <div class="section" style="padding-bottom: 0">
+              <div class="section-head">
+                <h2>Latest comments</h2>
+                <p>Refresh to see new comments from other devices.</p>
+              </div>
+              <div class="comments-list" data-comments-list></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p class="fine">DAVID'S football website</p>
+        <p class="fine"><a href="./index.html">Home</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

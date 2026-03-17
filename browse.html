@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Browse | DAVID'S football website</title>
+    <meta
+      name="description"
+      content="Browse teams and match requests. Filter by age group and search quickly."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./index.html" aria-label="Kickoff Hub home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-title">DAVID'S football website</span>
+            <span class="brand-sub">Friendlies & Tournaments</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="./team-signup.html" data-i18n="nav_team_signup">Team Signup</a>
+          <a href="./match-request.html" data-i18n="nav_match_request">Match Request</a>
+          <a href="./browse.html" data-i18n="nav_browse">Browse</a>
+          <a href="./tournaments.html" data-i18n="nav_tournaments">Tournaments</a>
+          <a href="./videos.html" data-i18n="nav_videos">Videos</a>
+          <a href="./comments.html" data-i18n="nav_comments">Comments</a>
+          <a href="./social.html" data-i18n="nav_social">Social</a>
+          <a href="./search.html" data-i18n="nav_search">Search</a>
+          <a href="./about.html" data-i18n="nav_about">About Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="page">
+      <div class="wrap">
+        <div class="page-head">
+          <h1 data-i18n="h_browse">Browse</h1>
+          <p>
+            Search and filter teams, match requests, and tournament entries.
+            Everything you add is stored on this device.
+          </p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-body">
+            <div class="toolbar">
+              <div class="search">
+                <label>
+                  Show
+                  <select data-kind>
+                    <option value="requests" selected>Match requests</option>
+                    <option value="teams">Teams</option>
+                    <option value="tournaments">Tournament entries</option>
+                  </select>
+                </label>
+                <label>
+                  Age group
+                  <select data-age>
+                    <option value="" selected>All</option>
+                    <option>U7</option>
+                    <option>U8</option>
+                    <option>U9</option>
+                    <option>U10</option>
+                    <option>U11</option>
+                    <option>U12</option>
+                    <option>U13</option>
+                    <option>U14</option>
+                    <option>U15</option>
+                    <option>U16</option>
+                    <option>U18</option>
+                    <option>Adults</option>
+                  </select>
+                </label>
+                <label>
+                  Search
+                  <input data-q placeholder="Team, town, rules, etc" />
+                </label>
+              </div>
+              <div class="cta-row" style="margin: 0">
+                <a class="btn btn-ghost" href="./team-signup.html">Add team</a>
+                <a class="btn btn-secondary" href="./match-request.html"
+                  >Post match</a
+                >
+              </div>
+            </div>
+
+            <div class="list" data-browse-list></div>
+          </div>
+        </section>
+
+        <section id="admin" class="section" data-admin>
+          <div class="section-head">
+            <h2>Admin</h2>
+            <p>
+              Export everything saved on this device, or wipe local data (useful
+              for demos).
+            </p>
+          </div>
+          <div class="callout">
+            <div>
+              <h3 class="callout-title">Export or clear</h3>
+              <p class="callout-copy">
+                Export downloads a single JSON file with teams, match requests,
+                and tournament entries.
+              </p>
+            </div>
+            <div class="cta-row" style="margin: 0">
+              <button class="btn btn-secondary" type="button" data-export-all>
+                Export JSON
+              </button>
+              <button class="btn btn-ghost danger" type="button" data-wipe>
+                Wipe local data
+              </button>
+            </div>
+          </div>
+          <p class="mono" style="margin-top: 10px">
+            Tip: To build a “real” site with logins and a database, we can add a
+            backend next.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p class="fine">DAVID'S football website: browse, contact, and play.</p>
+        <p class="fine"><a href="./index.html">Home</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

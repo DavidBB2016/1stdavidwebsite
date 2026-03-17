@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>DAVID'S football website | Friendlies & Tournaments</title>
+    <meta
+      name="description"
+      content="Sign up your football team, request friendly matches, and enter tournaments."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./index.html" aria-label="Kickoff Hub home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-title">DAVID'S football website</span>
+            <span class="brand-sub">Friendlies & Tournaments</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="./team-signup.html" data-i18n="nav_team_signup">Team Signup</a>
+          <a href="./match-request.html" data-i18n="nav_match_request">Match Request</a>
+          <a href="./browse.html" data-i18n="nav_browse">Browse</a>
+          <a href="./tournaments.html" data-i18n="nav_tournaments">Tournaments</a>
+          <a href="./videos.html" data-i18n="nav_videos">Videos</a>
+          <a href="./comments.html" data-i18n="nav_comments">Comments</a>
+          <a href="./social.html" data-i18n="nav_social">Social</a>
+          <a href="./search.html" data-i18n="nav_search">Search</a>
+          <a href="./about.html" data-i18n="nav_about">About Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <h1 data-i18n="h_index">Get your team playing more football.</h1>
+            <p class="lede">
+              Sign up your team, post a friendly match request, or enter a
+              tournament. Perfect for schools, clubs, and youth teams.
+            </p>
+            <p class="lede">
+              This website is for every age group: kids, teens, and adults.
+            </p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="./team-signup.html" data-i18n="btn_signup">Sign up your team</a>
+              <a class="btn btn-ghost" href="./browse.html" data-i18n="btn_find_opponents">Find opponents</a>
+            </div>
+            <div class="hero-meta">
+              <div class="meta-pill">
+                <span class="dot dot-green" aria-hidden="true"></span>
+                Works without a server (saves on this device)
+              </div>
+              <div class="meta-pill">
+                <span class="dot dot-amber" aria-hidden="true"></span>
+                Export submissions as JSON
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-card" role="region" aria-label="Quick actions">
+            <div class="card-top">
+              <h2 class="card-title">Quick actions</h2>
+              <p class="card-sub">Start in under a minute.</p>
+            </div>
+            <div class="card-actions">
+              <a class="action" href="./match-request.html">
+                <span class="action-title">Post a friendly request</span>
+                <span class="action-sub"
+                  >Date, location, age group, match format.</span
+                >
+              </a>
+              <a class="action" href="./tournaments.html">
+                <span class="action-title">Enter a tournament</span>
+                <span class="action-sub"
+                  >Register your team for upcoming events.</span
+                >
+              </a>
+              <a class="action" href="./browse.html">
+                <span class="action-title">Browse teams & requests</span>
+                <span class="action-sub"
+                  >Filter by age group, distance, match type.</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap section">
+        <div class="section-head">
+          <h2>How it works</h2>
+          <p>Simple steps for schools and clubs.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="tile reveal">
+            <div class="tile-badge">1</div>
+            <h3>Sign up your team</h3>
+            <p>
+              Add your team name, school or club, age group, and contact
+              details.
+            </p>
+          </article>
+          <article class="tile reveal">
+            <div class="tile-badge">2</div>
+            <h3>Post a match request</h3>
+            <p>
+              Choose friendly or tournament, set dates, home/away, and match
+              rules.
+            </p>
+          </article>
+          <article class="tile reveal">
+            <div class="tile-badge">3</div>
+            <h3>Connect & play</h3>
+            <p>
+              Browse posts, contact teams, and confirm fixtures with a clear
+              message.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="wrap section">
+        <div class="section-head">
+          <h2>Private by default</h2>
+          <p>
+            This starter site stores submissions in your browser. When you’re
+            ready, we can add a real database and accounts.
+          </p>
+        </div>
+        <div class="callout">
+          <div>
+            <h3 class="callout-title">Admin tools</h3>
+            <p class="callout-copy">
+              Export all teams, match requests, and tournament entries as JSON
+              (for email, Excel, or a future server).
+            </p>
+          </div>
+          <a class="btn btn-secondary" href="./browse.html#admin">Open admin</a>
+        </div>
+      </section>
+
+      <section class="wrap section">
+        <div class="section-head">
+          <h2>About me</h2>
+          <p>A little bit about the creator of this website.</p>
+        </div>
+        <div class="callout">
+          <div>
+            <h3 class="callout-title">I love Messi</h3>
+            <p class="callout-copy">Read more on the About Me page.</p>
+          </div>
+          <a class="btn btn-ghost" href="./about.html">Open About Me</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+          <p class="fine">
+            DAVID'S football website is a starter project. To publish online,
+            upload these files to your hosting provider.
+          </p>
+        <p class="fine">
+          <a href="./browse.html#admin">Export data</a> ·
+          <a href="./team-signup.html">Add team</a> ·
+          <a href="./match-request.html">Post match</a>
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

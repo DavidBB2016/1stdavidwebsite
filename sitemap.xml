@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!--
+    IMPORTANT:
+    After you publish, replace https://YOUR-PUBLISHED-DOMAIN/ with your real site URL.
+    Example: https://davids-football-website.netlify.app/
+  -->
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/index.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/team-signup.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/match-request.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/browse.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/tournaments.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/videos.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/comments.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/social.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/search.html</loc></url>
+  <url><loc>https://YOUR-PUBLISHED-DOMAIN/about.html</loc></url>
+</urlset>
+

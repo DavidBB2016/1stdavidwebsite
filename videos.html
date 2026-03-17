@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Videos | DAVID'S football website</title>
+    <meta
+      name="description"
+      content="Watch and share football videos. Add YouTube/Vimeo links to your gallery."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./index.html" aria-label="Home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-title">DAVID'S football website</span>
+            <span class="brand-sub">Friendlies & Tournaments</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="./team-signup.html" data-i18n="nav_team_signup">Team Signup</a>
+          <a href="./match-request.html" data-i18n="nav_match_request">Match Request</a>
+          <a href="./browse.html" data-i18n="nav_browse">Browse</a>
+          <a href="./tournaments.html" data-i18n="nav_tournaments">Tournaments</a>
+          <a href="./videos.html" data-i18n="nav_videos">Videos</a>
+          <a href="./comments.html" data-i18n="nav_comments">Comments</a>
+          <a href="./social.html" data-i18n="nav_social">Social</a>
+          <a href="./search.html" data-i18n="nav_search">Search</a>
+          <a href="./about.html" data-i18n="nav_about">About Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="page">
+      <div class="wrap">
+        <div class="page-head">
+          <h1 data-i18n="h_videos">Videos</h1>
+          <p>
+            Add YouTube or Vimeo links and they will appear in your video
+            gallery. Saved on this device.
+          </p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-body">
+            <form class="form" data-video-form>
+              <fieldset class="fieldset">
+                <legend>Add a video</legend>
+                <div class="grid-2">
+                  <label>
+                    Title <span class="req">*</span>
+                    <input name="title" required placeholder="Example: My football skills" />
+                  </label>
+                  <label>
+                    Video link <span class="req">*</span>
+                    <input
+                      name="url"
+                      required
+                      placeholder="Paste a YouTube/Vimeo link"
+                      inputmode="url"
+                    />
+                  </label>
+                </div>
+                <label>
+                  Description
+                  <textarea name="description" placeholder="Optional notes"></textarea>
+                </label>
+                <p class="hint">
+                  Tip: Use Share links from YouTube (youtu.be / youtube.com) or
+                  Vimeo.
+                </p>
+              </fieldset>
+
+              <div class="panel-foot">
+                <span class="small muted">Videos are saved in your browser.</span>
+                <div class="cta-row" style="margin: 0">
+                  <button class="btn btn-primary" type="submit" data-i18n="btn_add_video">Add video</button>
+                </div>
+              </div>
+            </form>
+
+            <div class="section" style="padding-bottom: 0">
+              <div class="section-head">
+                <h2>Your gallery</h2>
+                <p>Only you (and people using your device) see these videos.</p>
+              </div>
+              <div class="video-grid" data-video-list></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p class="fine">DAVID'S football website</p>
+        <p class="fine"><a href="./index.html">Home</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Update the domain in sitemap.xml after you publish the site.
+Sitemap: /sitemap.xml
+

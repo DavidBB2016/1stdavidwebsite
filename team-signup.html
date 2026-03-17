@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Team Signup | DAVID'S football website</title>
+    <meta
+      name="description"
+      content="Sign up your football team so other schools and teams can contact you for friendly matches and tournaments."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./index.html" aria-label="Kickoff Hub home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-title">DAVID'S football website</span>
+            <span class="brand-sub">Friendlies & Tournaments</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="./team-signup.html" data-i18n="nav_team_signup">Team Signup</a>
+          <a href="./match-request.html" data-i18n="nav_match_request">Match Request</a>
+          <a href="./browse.html" data-i18n="nav_browse">Browse</a>
+          <a href="./tournaments.html" data-i18n="nav_tournaments">Tournaments</a>
+          <a href="./videos.html" data-i18n="nav_videos">Videos</a>
+          <a href="./comments.html" data-i18n="nav_comments">Comments</a>
+          <a href="./social.html" data-i18n="nav_social">Social</a>
+          <a href="./search.html" data-i18n="nav_search">Search</a>
+          <a href="./about.html" data-i18n="nav_about">About Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="page">
+      <div class="wrap">
+        <div class="page-head">
+          <h1 data-i18n="h_team_signup">Team signup</h1>
+          <p>
+            Add your team to Kickoff Hub so other teams and schools can contact
+            you for friendly matches or tournaments. This is for every age
+            group.
+          </p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-body">
+            <form class="form" data-team-form>
+              <fieldset class="fieldset">
+                <legend>Team details</legend>
+                <div class="grid-2">
+                  <label>
+                    Team name <span class="req">*</span>
+                    <input name="team_name" autocomplete="organization" required />
+                  </label>
+                  <label>
+                    School or club? <span class="req">*</span>
+                    <select name="team_type" required>
+                      <option value="" selected disabled>Select one</option>
+                      <option>School</option>
+                      <option>Club</option>
+                      <option>College</option>
+                      <option>University</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    Age group <span class="req">*</span>
+                    <select name="age_group" required>
+                      <option value="" selected disabled>Select age group</option>
+                      <option>U7</option>
+                      <option>U8</option>
+                      <option>U9</option>
+                      <option>U10</option>
+                      <option>U11</option>
+                      <option>U12</option>
+                      <option>U13</option>
+                      <option>U14</option>
+                      <option>U15</option>
+                      <option>U16</option>
+                      <option>U18</option>
+                      <option>Adults</option>
+                    </select>
+                  </label>
+                  <label>
+                    Level
+                    <select name="level">
+                      <option value="" selected>Any</option>
+                      <option>Beginner</option>
+                      <option>Intermediate</option>
+                      <option>Advanced</option>
+                      <option>Competitive</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    Preferred day to play
+                    <select name="preferred_day">
+                      <option value="" selected>Any</option>
+                      <option>Weekday</option>
+                      <option>Saturday</option>
+                      <option>Sunday</option>
+                    </select>
+                  </label>
+                  <label>
+                    Notes
+                    <input
+                      name="notes"
+                      placeholder="Example: looking for 7-a-side, within 30 minutes travel"
+                    />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fieldset">
+                <legend>Location</legend>
+                <div class="grid-2">
+                  <label>
+                    Town / City <span class="req">*</span>
+                    <input name="town_city" autocomplete="address-level2" required />
+                  </label>
+                  <label>
+                    Country <span class="req">*</span>
+                    <input name="country" autocomplete="country-name" required />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fieldset">
+                <legend>Contact</legend>
+                <div class="grid-2">
+                  <label>
+                    Contact name <span class="req">*</span>
+                    <input name="contact_name" autocomplete="name" required />
+                  </label>
+                  <label>
+                    Contact email <span class="req">*</span>
+                    <input name="contact_email" autocomplete="email" type="email" required />
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    Contact phone
+                    <input name="contact_phone" autocomplete="tel" />
+                  </label>
+                  <label>
+                    Best way to contact
+                    <select name="contact_method">
+                      <option value="" selected>Email</option>
+                      <option>Email</option>
+                      <option>Phone</option>
+                      <option>WhatsApp</option>
+                    </select>
+                  </label>
+                </div>
+                <p class="hint">
+                  Required fields are marked with <span class="req">*</span>.
+                </p>
+              </fieldset>
+
+              <div class="panel-foot">
+                <span class="small muted"
+                  >Saved on this device. Export from Browse.</span
+                >
+                <div class="cta-row" style="margin: 0">
+                  <a class="btn btn-ghost" href="./browse.html">Browse</a>
+                  <button class="btn btn-primary" type="submit" data-i18n="btn_save_team">Save team</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p class="fine">Next: post a match request to find opponents.</p>
+        <p class="fine">
+          <a href="./match-request.html">Post a match request</a>
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

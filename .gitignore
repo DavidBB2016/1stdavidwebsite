@@ -1,0 +1,6 @@
+.DS_Store
+site.zip
+data/
+.vercel/
+node_modules/
+

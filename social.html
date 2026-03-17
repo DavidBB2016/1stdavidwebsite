@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Social | DAVID'S football website</title>
+    <meta name="description" content="Follow and share DAVID'S football website on social media." />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./index.html" aria-label="Home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-title">DAVID'S football website</span>
+            <span class="brand-sub">Friendlies & Tournaments</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="./team-signup.html" data-i18n="nav_team_signup">Team Signup</a>
+          <a href="./match-request.html" data-i18n="nav_match_request">Match Request</a>
+          <a href="./browse.html" data-i18n="nav_browse">Browse</a>
+          <a href="./tournaments.html" data-i18n="nav_tournaments">Tournaments</a>
+          <a href="./videos.html" data-i18n="nav_videos">Videos</a>
+          <a href="./comments.html" data-i18n="nav_comments">Comments</a>
+          <a href="./social.html" data-i18n="nav_social">Social</a>
+          <a href="./search.html" data-i18n="nav_search">Search</a>
+          <a href="./about.html" data-i18n="nav_about">About Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="page">
+      <div class="wrap">
+        <div class="page-head">
+          <h1 data-i18n="h_social">Social</h1>
+          <p>Add your social links so people can follow you.</p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-body">
+            <form class="form" data-social-form>
+              <fieldset class="fieldset">
+                <legend>Your links</legend>
+                <div class="grid-2">
+                  <label>
+                    Instagram
+                    <input name="instagram" placeholder="https://instagram.com/yourname" inputmode="url" />
+                  </label>
+                  <label>
+                    TikTok
+                    <input name="tiktok" placeholder="https://tiktok.com/@yourname" inputmode="url" />
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    YouTube
+                    <input name="youtube" placeholder="https://youtube.com/@yourname" inputmode="url" />
+                  </label>
+                  <label>
+                    Snapchat
+                    <input name="snapchat" placeholder="snapchat username or link" />
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    X (Twitter)
+                    <input name="x" placeholder="https://x.com/yourname" inputmode="url" />
+                  </label>
+                  <label>
+                    Facebook
+                    <input name="facebook" placeholder="https://facebook.com/yourname" inputmode="url" />
+                  </label>
+                </div>
+                <p class="hint">These links are saved on this device.</p>
+              </fieldset>
+
+              <div class="panel-foot">
+                <span class="small muted">Tip: You can share the website link too.</span>
+                <div class="cta-row" style="margin: 0">
+                  <button class="btn btn-ghost" type="button" data-share-btn>Share this site</button>
+                  <button class="btn btn-primary" type="submit" data-i18n="btn_save_social">Save socials</button>
+                </div>
+              </div>
+            </form>
+
+            <div class="section" style="padding-bottom: 0">
+              <div class="section-head">
+                <h2>Preview</h2>
+                <p>These buttons will appear in the footer on every page.</p>
+              </div>
+              <div class="social-preview" data-social-preview></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p class="fine">DAVID'S football website</p>
+        <p class="fine"><a href="./index.html">Home</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
