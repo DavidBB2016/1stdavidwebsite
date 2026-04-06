@@ -4,8 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
-    <title>Social | DAVID'S football website</title>
-    <meta name="description" content="Follow and share DAVID'S football website on social media." />
+    <title>Donate | DAVID'S football website</title>
+    <meta
+      name="description"
+      content="Support DAVID'S football website with a donation."
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -38,53 +41,59 @@
     <main id="main" class="page">
       <div class="wrap">
         <div class="page-head">
-          <h1 data-i18n="h_social">Social</h1>
-          <p>Add your social links so people can follow you.</p>
+          <h1 data-i18n="h_donate">Donate</h1>
+          <p>
+            If you like this website and want to support it, you can donate
+            using the options below.
+          </p>
         </div>
 
         <section class="panel">
           <div class="panel-body">
-            <form class="form" data-social-form>
+            <form class="form" data-donate-form>
               <fieldset class="fieldset">
-                <legend>Your links</legend>
+                <legend>Donation links</legend>
                 <div class="grid-2">
                   <label>
-                    Instagram
-                    <input name="instagram" placeholder="https://instagram.com/yourname" inputmode="url" />
+                    Cash App cashtag
+                    <input name="cashapp" placeholder="$YourCashtag" />
                   </label>
                   <label>
-                    TikTok
-                    <input name="tiktok" placeholder="https://tiktok.com/@yourname" inputmode="url" />
+                    PayPal.Me link
+                    <input
+                      name="paypalme"
+                      placeholder="https://paypal.me/yourname"
+                      inputmode="url"
+                    />
                   </label>
                 </div>
                 <div class="grid-2">
                   <label>
-                    YouTube
-                    <input name="youtube" placeholder="https://youtube.com/@yourname" inputmode="url" />
+                    Ko-fi link
+                    <input name="kofi" placeholder="https://ko-fi.com/yourname" inputmode="url" />
                   </label>
                   <label>
-                    Snapchat
-                    <input name="snapchat" placeholder="snapchat username or link" />
+                    Buy Me a Coffee link
+                    <input
+                      name="bmac"
+                      placeholder="https://www.buymeacoffee.com/yourname"
+                      inputmode="url"
+                    />
                   </label>
                 </div>
-                <div class="grid-2">
-                  <label>
-                    X (Twitter)
-                    <input name="x" placeholder="https://x.com/yourname" inputmode="url" />
-                  </label>
-                  <label>
-                    Facebook
-                    <input name="facebook" placeholder="https://facebook.com/yourname" inputmode="url" />
-                  </label>
-                </div>
-                <p class="hint">These links are saved on this device.</p>
+                <p class="hint">
+                  These are saved on this device. When you publish the site, you
+                  can hardcode your real links if you want everyone to see the
+                  same donation buttons.
+                </p>
               </fieldset>
 
               <div class="panel-foot">
-                <span class="small muted">Tip: You can share the website link too.</span>
+                <span class="small muted">Tip: Keep it safe. Don’t share private info.</span>
                 <div class="cta-row" style="margin: 0">
-                  <button class="btn btn-ghost" type="button" data-share-btn>Share this site</button>
-                  <button class="btn btn-primary" type="submit" data-i18n="btn_save_social">Save socials</button>
+                  <button class="btn btn-primary" type="submit" data-i18n="btn_save_donate">
+                    Save donation links
+                  </button>
                 </div>
               </div>
             </form>
@@ -92,9 +101,9 @@
             <div class="section" style="padding-bottom: 0">
               <div class="section-head">
                 <h2>Preview</h2>
-                <p>These buttons will appear in the footer on every page.</p>
+                <p>These buttons open in a new tab.</p>
               </div>
-              <div class="social-preview" data-social-preview></div>
+              <div class="donate-preview" data-donate-preview></div>
             </div>
           </div>
         </section>
@@ -111,3 +120,4 @@
     <script type="module" src="./app.js"></script>
   </body>
 </html>
+

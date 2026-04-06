@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   videos: "kickoffhub_videos_v1",
   commentsLocal: "kickoffhub_comments_local_v1",
   lang: "kickoffhub_lang_v1",
+  donate: "kickoffhub_donate_v1",
 };
 
 function nowIso() {
@@ -604,6 +605,7 @@ function setupLanguageSwitcher() {
       nav_social: "Social",
       nav_search: "Search",
       nav_likes: "Likes",
+      nav_donate: "Donate",
       nav_about: "About Me",
       h_index: "Get your team playing more football.",
       h_team_signup: "Team signup",
@@ -615,6 +617,7 @@ function setupLanguageSwitcher() {
       h_social: "Social",
       h_search: "Football search",
       h_likes: "Likes",
+      h_donate: "Donate",
       h_about: "About me",
       btn_signup: "Sign up your team",
       btn_find_opponents: "Find opponents",
@@ -626,6 +629,7 @@ function setupLanguageSwitcher() {
       btn_save_social: "Save socials",
       btn_search: "Search",
       ph_search: "Example: Lamine Yamal highlights",
+      btn_save_donate: "Save donation links",
     },
     ro: {
       lang_label: "Limba",
@@ -638,6 +642,7 @@ function setupLanguageSwitcher() {
       nav_social: "Social",
       nav_search: "Cauta",
       nav_likes: "Like-uri",
+      nav_donate: "Doneaza",
       nav_about: "Despre mine",
       h_index: "Fa ca echipa ta sa joace mai mult fotbal.",
       h_team_signup: "Inscriere echipa",
@@ -649,6 +654,7 @@ function setupLanguageSwitcher() {
       h_social: "Social",
       h_search: "Cautare fotbal",
       h_likes: "Like-uri",
+      h_donate: "Doneaza",
       h_about: "Despre mine",
       btn_signup: "Inscrie echipa",
       btn_find_opponents: "Gaseste adversari",
@@ -660,6 +666,7 @@ function setupLanguageSwitcher() {
       btn_save_social: "Salveaza",
       btn_search: "Cauta",
       ph_search: "Exemplu: Lamine Yamal highlights",
+      btn_save_donate: "Salveaza",
     },
     es: {
       lang_label: "Idioma",
@@ -672,6 +679,7 @@ function setupLanguageSwitcher() {
       nav_social: "Social",
       nav_search: "Buscar",
       nav_likes: "Me gusta",
+      nav_donate: "Donar",
       nav_about: "Sobre mi",
       h_index: "Haz que tu equipo juegue mas futbol.",
       h_team_signup: "Registro del equipo",
@@ -683,6 +691,7 @@ function setupLanguageSwitcher() {
       h_social: "Social",
       h_search: "Buscar futbol",
       h_likes: "Me gusta",
+      h_donate: "Donar",
       h_about: "Sobre mi",
       btn_signup: "Registrar equipo",
       btn_find_opponents: "Encontrar rivales",
@@ -694,6 +703,7 @@ function setupLanguageSwitcher() {
       btn_save_social: "Guardar",
       btn_search: "Buscar",
       ph_search: "Ejemplo: Lamine Yamal highlights",
+      btn_save_donate: "Guardar",
     },
     fr: {
       lang_label: "Langue",
@@ -706,6 +716,7 @@ function setupLanguageSwitcher() {
       nav_social: "Social",
       nav_search: "Rechercher",
       nav_likes: "J'aime",
+      nav_donate: "Faire un don",
       nav_about: "A propos de moi",
       h_index: "Fais jouer ton equipe plus souvent.",
       h_team_signup: "Inscription equipe",
@@ -717,6 +728,7 @@ function setupLanguageSwitcher() {
       h_social: "Social",
       h_search: "Recherche football",
       h_likes: "J'aime",
+      h_donate: "Faire un don",
       h_about: "A propos de moi",
       btn_signup: "Inscrire l'equipe",
       btn_find_opponents: "Trouver des adversaires",
@@ -728,6 +740,7 @@ function setupLanguageSwitcher() {
       btn_save_social: "Enregistrer",
       btn_search: "Rechercher",
       ph_search: "Exemple: Lamine Yamal highlights",
+      btn_save_donate: "Enregistrer",
     },
   };
 
@@ -1411,6 +1424,86 @@ function onLikesPage() {
   window.setInterval(refresh, 6000);
 }
 
+function onDonatePage() {
+  const form = document.querySelector("[data-donate-form]");
+  const preview = document.querySelector("[data-donate-preview]");
+  if (!form || !preview) return;
+
+  function normalizeUrl(value) {
+    const v = String(value || "").trim();
+    if (!v) return "";
+    try {
+      const u = new URL(v.includes("://") ? v : `https://${v}`);
+      return u.toString();
+    } catch {
+      return v;
+    }
+  }
+
+  function readDonate() {
+    const raw = readJson(STORAGE_KEYS.donate, {});
+    return raw && typeof raw === "object" ? raw : {};
+  }
+
+  function saveDonate(d) {
+    writeJson(STORAGE_KEYS.donate, d);
+  }
+
+  function buildCashAppLink(cashtag) {
+    const tag = String(cashtag || "").trim();
+    if (!tag) return "";
+    const cleaned = tag.startsWith("$") ? tag.slice(1) : tag;
+    if (!cleaned) return "";
+    return `https://cash.app/$${encodeURIComponent(cleaned)}`;
+  }
+
+  function render(d) {
+    const items = [];
+    const cash = buildCashAppLink(d.cashapp);
+    if (cash) items.push({ label: "Cash App", href: cash });
+    if (d.paypalme) items.push({ label: "PayPal", href: d.paypalme });
+    if (d.kofi) items.push({ label: "Ko-fi", href: d.kofi });
+    if (d.bmac) items.push({ label: "Buy Me a Coffee", href: d.bmac });
+
+    if (!items.length) {
+      preview.innerHTML = `<p class="muted">No donation links yet. Add one above.</p>`;
+      return;
+    }
+
+    preview.innerHTML = `
+      <div class="social-row">
+        ${items
+          .map(
+            (i) =>
+              `<a class="btn btn-secondary" href="${escapeText(i.href)}" target="_blank" rel="noreferrer">${escapeText(i.label)}</a>`
+          )
+          .join("")}
+      </div>
+    `;
+  }
+
+  const current = readDonate();
+  for (const name of ["cashapp", "paypalme", "kofi", "bmac"]) {
+    const el = form.querySelector(`[name="${name}"]`);
+    if (el && current[name]) el.value = current[name];
+  }
+  render(current);
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = collectForm(form);
+    const next = {
+      cashapp: String(data.cashapp || "").trim(),
+      paypalme: normalizeUrl(data.paypalme),
+      kofi: normalizeUrl(data.kofi),
+      bmac: normalizeUrl(data.bmac),
+    };
+    saveDonate(next);
+    render(next);
+    toast("Saved", "Donation links saved on this device.");
+  });
+}
+
 function setupFooterSocials() {
   const foot = document.querySelector(".site-footer .footer-inner");
   if (!foot) return;
@@ -1792,3 +1885,4 @@ onSocialPage();
 setupFooterSocials();
 onFootballSearchPage();
 onLikesPage();
+onDonatePage();

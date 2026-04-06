@@ -559,6 +559,11 @@ a:hover {
   font-size: 13px;
 }
 
+.donate-preview {
+  display: grid;
+  gap: 10px;
+}
+
 @media (max-width: 920px) {
   .quick-grid {
     grid-template-columns: 1fr;
