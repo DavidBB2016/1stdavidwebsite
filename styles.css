@@ -596,10 +596,34 @@ a:hover {
 }
 
 .donate-ticks {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  height: 18px;
+  margin-top: -2px;
+  user-select: none;
+}
+
+.donate-ticks::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 7px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.donate-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
   color: var(--faint);
   font-size: 12px;
+  white-space: nowrap;
+}
+
+.donate-direct input {
+  margin-top: 6px;
 }
 
 @media (max-width: 920px) {

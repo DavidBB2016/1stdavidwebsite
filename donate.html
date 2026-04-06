@@ -116,19 +116,30 @@
                     class="donate-range"
                     name="amount"
                     type="range"
-                    min="1"
-                    max="50"
+                    min="0"
+                    max="1000"
                     step="1"
-                    value="5"
+                    value="233"
                     data-donate-amount
                     aria-label="Donation amount"
                   />
-                  <div class="donate-ticks" aria-hidden="true">
-                    <span>1</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span>
-                  </div>
+                  <div class="donate-ticks" data-donate-ticks aria-hidden="true"></div>
+                  <label class="donate-direct">
+                    Exact amount (1 to 1,000,000,000)
+                    <input
+                      name="amount_exact"
+                      type="number"
+                      min="1"
+                      max="1000000000"
+                      step="1"
+                      value="5"
+                      data-donate-amount-direct
+                    />
+                  </label>
                   <p class="hint">
-                    You can slide the arrow to any number. Some donation links
-                    can pre-fill the amount; others will ask you to type it.
+                    The slider goes up to 1 billion. For an exact number, type
+                    it in the box. Some donation links can pre-fill the amount;
+                    others will ask you to type it.
                   </p>
                 </div>
               </fieldset>

@@ -1428,9 +1428,11 @@ function onDonatePage() {
   const form = document.querySelector("[data-donate-form]");
   const preview = document.querySelector("[data-donate-preview]");
   const amountRange = document.querySelector("[data-donate-amount]");
+  const amountDirect = document.querySelector("[data-donate-amount-direct]");
   const amountLabel = document.querySelector("[data-donate-amount-label]");
   const currencySel = document.querySelector("[data-donate-currency]");
   const copyBtn = document.querySelector("[data-donate-copy]");
+  const ticksEl = document.querySelector("[data-donate-ticks]");
   if (!form || !preview) return;
 
   function normalizeUrl(value) {
@@ -1479,6 +1481,49 @@ function onDonatePage() {
     }
   }
 
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  // Slider uses a log scale so we can reach 1,000,000,000 without needing a giant range input.
+  // 0 => 1, 1000 => 1e9
+  function sliderToAmount(pos) {
+    const p = clamp(Number(pos) || 0, 0, 1000);
+    const raw = Math.pow(10, (p / 1000) * 9);
+    // Round to integer for donation providers.
+    return clamp(Math.round(raw), 1, 1_000_000_000);
+  }
+
+  function amountToSlider(amount) {
+    const a = clamp(Number(amount) || 1, 1, 1_000_000_000);
+    const log = Math.log10(a);
+    return String(clamp(Math.round((log / 9) * 1000), 0, 1000));
+  }
+
+  function renderTicks() {
+    if (!ticksEl) return;
+    const ticks = [
+      { value: 1, label: "1" },
+      { value: 10, label: "10" },
+      { value: 100, label: "100" },
+      { value: 1_000, label: "1k" },
+      { value: 10_000, label: "10k" },
+      { value: 100_000, label: "100k" },
+      { value: 1_000_000, label: "1m" },
+      { value: 10_000_000, label: "10m" },
+      { value: 100_000_000, label: "100m" },
+      { value: 1_000_000_000, label: "1b" },
+    ];
+
+    ticksEl.innerHTML = ticks
+      .map((t) => {
+        const pos = Number(amountToSlider(t.value)) || 0;
+        const pct = clamp((pos / 1000) * 100, 0, 100);
+        return `<span class="donate-tick" style="left:${pct}%">${escapeText(t.label)}</span>`;
+      })
+      .join("");
+  }
+
   function withPayPalAmount(url, amount) {
     const u = String(url || "").trim();
     if (!u) return "";
@@ -1506,7 +1551,7 @@ function onDonatePage() {
   function render(d) {
     const items = [];
     const currency = getCurrency(d);
-    const amount = Number(d.amount) || 5;
+    const amount = clamp(Number(d.amount) || 5, 1, 1_000_000_000);
     const money = formatMoney(amount, currency);
 
     const cashBase = buildCashAppLink(d.cashapp);
@@ -1543,27 +1588,36 @@ function onDonatePage() {
     if (!amountLabel || !amountRange) return;
     const d = readDonate();
     // Prefer current form values while editing.
-    const amount = Number(amountRange.value) || Number(d.amount) || 5;
+    const amountFromSlider = sliderToAmount(amountRange.value);
+    const typed = amountDirect ? Number(amountDirect.value) : NaN;
+    const amount = Number.isFinite(typed) && typed > 0 ? typed : (Number(d.amount) || amountFromSlider || 5);
     const currency =
       currencySel?.value === "Other"
         ? (form.querySelector("[name=\"currency_other\"]")?.value || d.currency_other || "GBP")
         : (currencySel?.value || d.currency || "GBP");
     const cur = String(currency || "GBP").trim().toUpperCase();
-    amountLabel.textContent = formatMoney(amount, cur);
+    amountLabel.textContent = formatMoney(clamp(amount, 1, 1_000_000_000), cur);
   }
 
   // Set sensible defaults if missing.
   if (!current.amount) current.amount = "5";
   if (!current.currency) current.currency = "GBP";
-  if (amountRange && !amountRange.value) amountRange.value = String(current.amount);
+  if (amountRange && !amountRange.value) amountRange.value = amountToSlider(current.amount);
   if (currencySel && !currencySel.value) currencySel.value = String(current.currency);
+  if (amountDirect && !amountDirect.value) amountDirect.value = String(current.amount);
 
+  renderTicks();
   syncAmountLabel();
-  render({ ...current, amount: amountRange?.value || current.amount, currency: currencySel?.value || current.currency });
+  render({
+    ...current,
+    amount: amountDirect?.value || current.amount,
+    currency: currencySel?.value || current.currency,
+  });
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const data = collectForm(form);
+    const exact = clamp(Number(data.amount_exact || data.amount || "5") || 5, 1, 1_000_000_000);
     const next = {
       cashapp: String(data.cashapp || "").trim(),
       paypalme: normalizeUrl(data.paypalme),
@@ -1571,35 +1625,49 @@ function onDonatePage() {
       bmac: normalizeUrl(data.bmac),
       currency: String(data.currency || "GBP"),
       currency_other: String(data.currency_other || "").trim(),
-      amount: String(data.amount || "5"),
+      amount: String(exact),
     };
     saveDonate(next);
+    if (amountDirect) amountDirect.value = String(exact);
+    if (amountRange) amountRange.value = amountToSlider(exact);
     syncAmountLabel();
     render(next);
     toast("Saved", "Donation links saved on this device.");
   });
 
   amountRange?.addEventListener("input", () => {
+    const amount = sliderToAmount(amountRange.value);
+    if (amountDirect) amountDirect.value = String(amount);
     syncAmountLabel();
     const d = readDonate();
-    render({ ...d, amount: amountRange.value, currency: currencySel?.value || d.currency });
+    render({ ...d, amount: String(amount), currency: currencySel?.value || d.currency });
+  });
+
+  amountDirect?.addEventListener("input", () => {
+    const amount = clamp(Number(amountDirect.value) || 1, 1, 1_000_000_000);
+    if (amountRange) amountRange.value = amountToSlider(amount);
+    syncAmountLabel();
+    const d = readDonate();
+    render({ ...d, amount: String(amount), currency: currencySel?.value || d.currency });
   });
 
   currencySel?.addEventListener("change", () => {
     syncAmountLabel();
     const d = readDonate();
-    render({ ...d, amount: amountRange?.value || d.amount, currency: currencySel.value });
+    const amount = amountDirect?.value || d.amount;
+    render({ ...d, amount: amount, currency: currencySel.value });
   });
 
   form.querySelector("[name=\"currency_other\"]")?.addEventListener("input", () => {
     syncAmountLabel();
     const d = readDonate();
-    render({ ...d, amount: amountRange?.value || d.amount, currency: currencySel?.value || d.currency });
+    const amount = amountDirect?.value || d.amount;
+    render({ ...d, amount: amount, currency: currencySel?.value || d.currency });
   });
 
   copyBtn?.addEventListener("click", async () => {
     const d = readDonate();
-    const amount = Number(amountRange?.value || d.amount) || 5;
+    const amount = clamp(Number(amountDirect?.value || d.amount) || 5, 1, 1_000_000_000);
     const currency = getCurrency({ ...d, currency: currencySel?.value || d.currency, currency_other: form.querySelector("[name=\"currency_other\"]")?.value || d.currency_other });
     const text = `Donation amount: ${formatMoney(amount, currency)}`;
     try {
