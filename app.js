@@ -1427,6 +1427,10 @@ function onLikesPage() {
 function onDonatePage() {
   const form = document.querySelector("[data-donate-form]");
   const preview = document.querySelector("[data-donate-preview]");
+  const amountRange = document.querySelector("[data-donate-amount]");
+  const amountLabel = document.querySelector("[data-donate-amount-label]");
+  const currencySel = document.querySelector("[data-donate-currency]");
+  const copyBtn = document.querySelector("[data-donate-copy]");
   if (!form || !preview) return;
 
   function normalizeUrl(value) {
@@ -1457,11 +1461,58 @@ function onDonatePage() {
     return `https://cash.app/$${encodeURIComponent(cleaned)}`;
   }
 
+  function getCurrency(d) {
+    const base = String(d.currency || "GBP").trim();
+    if (base === "Other") {
+      const other = String(d.currency_other || "").trim().toUpperCase();
+      return other || "GBP";
+    }
+    return base || "GBP";
+  }
+
+  function formatMoney(amount, currency) {
+    const n = Number(amount) || 0;
+    try {
+      return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(n);
+    } catch {
+      return `${n} ${currency}`;
+    }
+  }
+
+  function withPayPalAmount(url, amount) {
+    const u = String(url || "").trim();
+    if (!u) return "";
+    // PayPal.Me supports adding /{amount} at the end.
+    const n = Number(amount);
+    if (!Number.isFinite(n) || n <= 0) return u;
+    if (u.includes("paypal.me/") || u.includes("paypal.com/paypalme/")) {
+      return u.replace(/\/+$/, "") + `/${encodeURIComponent(String(Math.round(n)))}`;
+    }
+    return u;
+  }
+
+  function withCashAppAmount(url, amount) {
+    const u = String(url || "").trim();
+    if (!u) return "";
+    // Cash App supports /$cashtag/{amount} (amount only).
+    const n = Number(amount);
+    if (!Number.isFinite(n) || n <= 0) return u;
+    if (u.includes("cash.app/$")) {
+      return u.replace(/\/+$/, "") + `/${encodeURIComponent(String(Math.round(n)))}`;
+    }
+    return u;
+  }
+
   function render(d) {
     const items = [];
-    const cash = buildCashAppLink(d.cashapp);
-    if (cash) items.push({ label: "Cash App", href: cash });
-    if (d.paypalme) items.push({ label: "PayPal", href: d.paypalme });
+    const currency = getCurrency(d);
+    const amount = Number(d.amount) || 5;
+    const money = formatMoney(amount, currency);
+
+    const cashBase = buildCashAppLink(d.cashapp);
+    if (cashBase) items.push({ label: `Cash App (${money})`, href: withCashAppAmount(cashBase, amount) });
+
+    if (d.paypalme) items.push({ label: `PayPal (${money})`, href: withPayPalAmount(d.paypalme, amount) });
     if (d.kofi) items.push({ label: "Ko-fi", href: d.kofi });
     if (d.bmac) items.push({ label: "Buy Me a Coffee", href: d.bmac });
 
@@ -1483,11 +1534,32 @@ function onDonatePage() {
   }
 
   const current = readDonate();
-  for (const name of ["cashapp", "paypalme", "kofi", "bmac"]) {
+  for (const name of ["cashapp", "paypalme", "kofi", "bmac", "currency", "currency_other", "amount"]) {
     const el = form.querySelector(`[name="${name}"]`);
     if (el && current[name]) el.value = current[name];
   }
-  render(current);
+
+  function syncAmountLabel() {
+    if (!amountLabel || !amountRange) return;
+    const d = readDonate();
+    // Prefer current form values while editing.
+    const amount = Number(amountRange.value) || Number(d.amount) || 5;
+    const currency =
+      currencySel?.value === "Other"
+        ? (form.querySelector("[name=\"currency_other\"]")?.value || d.currency_other || "GBP")
+        : (currencySel?.value || d.currency || "GBP");
+    const cur = String(currency || "GBP").trim().toUpperCase();
+    amountLabel.textContent = formatMoney(amount, cur);
+  }
+
+  // Set sensible defaults if missing.
+  if (!current.amount) current.amount = "5";
+  if (!current.currency) current.currency = "GBP";
+  if (amountRange && !amountRange.value) amountRange.value = String(current.amount);
+  if (currencySel && !currencySel.value) currencySel.value = String(current.currency);
+
+  syncAmountLabel();
+  render({ ...current, amount: amountRange?.value || current.amount, currency: currencySel?.value || current.currency });
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1497,10 +1569,45 @@ function onDonatePage() {
       paypalme: normalizeUrl(data.paypalme),
       kofi: normalizeUrl(data.kofi),
       bmac: normalizeUrl(data.bmac),
+      currency: String(data.currency || "GBP"),
+      currency_other: String(data.currency_other || "").trim(),
+      amount: String(data.amount || "5"),
     };
     saveDonate(next);
+    syncAmountLabel();
     render(next);
     toast("Saved", "Donation links saved on this device.");
+  });
+
+  amountRange?.addEventListener("input", () => {
+    syncAmountLabel();
+    const d = readDonate();
+    render({ ...d, amount: amountRange.value, currency: currencySel?.value || d.currency });
+  });
+
+  currencySel?.addEventListener("change", () => {
+    syncAmountLabel();
+    const d = readDonate();
+    render({ ...d, amount: amountRange?.value || d.amount, currency: currencySel.value });
+  });
+
+  form.querySelector("[name=\"currency_other\"]")?.addEventListener("input", () => {
+    syncAmountLabel();
+    const d = readDonate();
+    render({ ...d, amount: amountRange?.value || d.amount, currency: currencySel?.value || d.currency });
+  });
+
+  copyBtn?.addEventListener("click", async () => {
+    const d = readDonate();
+    const amount = Number(amountRange?.value || d.amount) || 5;
+    const currency = getCurrency({ ...d, currency: currencySel?.value || d.currency, currency_other: form.querySelector("[name=\"currency_other\"]")?.value || d.currency_other });
+    const text = `Donation amount: ${formatMoney(amount, currency)}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Copied", text);
+    } catch {
+      toast("Copy failed", text);
+    }
   });
 }
 

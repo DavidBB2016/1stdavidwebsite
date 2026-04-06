@@ -88,9 +88,57 @@
                 </p>
               </fieldset>
 
+              <fieldset class="fieldset">
+                <legend>Amount</legend>
+                <div class="grid-2">
+                  <label>
+                    Currency
+                    <select name="currency" data-donate-currency>
+                      <option value="GBP" selected>GBP (British Pound)</option>
+                      <option value="USD">USD (US Dollar)</option>
+                      <option value="EUR">EUR (Euro)</option>
+                      <option value="RON">RON (Romanian Leu)</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </label>
+                  <label>
+                    Custom currency (if Other)
+                    <input name="currency_other" placeholder="Example: JPY" maxlength="10" />
+                  </label>
+                </div>
+
+                <div class="donate-amount">
+                  <div class="donate-amount-head">
+                    <p class="donate-amount-label">Choose an amount</p>
+                    <p class="donate-amount-value" data-donate-amount-label>£5</p>
+                  </div>
+                  <input
+                    class="donate-range"
+                    name="amount"
+                    type="range"
+                    min="1"
+                    max="50"
+                    step="1"
+                    value="5"
+                    data-donate-amount
+                    aria-label="Donation amount"
+                  />
+                  <div class="donate-ticks" aria-hidden="true">
+                    <span>1</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span>
+                  </div>
+                  <p class="hint">
+                    You can slide the arrow to any number. Some donation links
+                    can pre-fill the amount; others will ask you to type it.
+                  </p>
+                </div>
+              </fieldset>
+
               <div class="panel-foot">
                 <span class="small muted">Tip: Keep it safe. Don’t share private info.</span>
                 <div class="cta-row" style="margin: 0">
+                  <button class="btn btn-ghost" type="button" data-donate-copy>
+                    Copy amount
+                  </button>
                   <button class="btn btn-primary" type="submit" data-i18n="btn_save_donate">
                     Save donation links
                   </button>
@@ -104,6 +152,9 @@
                 <p>These buttons open in a new tab.</p>
               </div>
               <div class="donate-preview" data-donate-preview></div>
+              <p class="mono" style="margin-top: 10px" data-donate-note>
+                Note: Currency support depends on the payment provider.
+              </p>
             </div>
           </div>
         </section>
@@ -120,4 +171,3 @@
     <script type="module" src="./app.js"></script>
   </body>
 </html>
-
