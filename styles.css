@@ -1300,45 +1300,6 @@ textarea:focus {
   }
 }
 
-/* Text-to-speech controls */
-.tts-bar {
-  position: fixed;
-  left: 14px;
-  bottom: 14px;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  padding: 10px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(4, 10, 7, 0.72);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow);
-}
-
-.tts-page .tts-bar {
-  display: none;
-}
-
-.tts-btn {
-  padding: 10px 12px;
-  box-shadow: none;
-}
-
-.tts-label {
-  display: grid;
-  gap: 6px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.tts-select,
-.tts-range {
-  min-width: 180px;
-}
-
 @media (max-width: 920px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -1407,15 +1368,4 @@ textarea:focus {
     justify-content: space-between;
   }
 
-  .tts-bar {
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    justify-content: space-between;
-  }
-
-  .tts-select,
-  .tts-range {
-    min-width: 140px;
-  }
 }

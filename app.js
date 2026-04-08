@@ -65,6 +65,8 @@ function toast(title, copy) {
 }
 
 function setupTts() {
+  // Bottom read-aloud bar removed. Use the Read Aloud tab (read-aloud.html) instead.
+  return;
   const supported = typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
   if (!supported) return;
 
@@ -2339,7 +2341,6 @@ setupPresenceCounter();
 setupLanguageSwitcher();
 setupMobileNav();
 setupLikeButton();
-setupTts();
 onTeamSignupPage();
 onMatchRequestPage();
 onTournamentPage();
