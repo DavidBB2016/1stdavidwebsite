@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
-    <title>Comments | DAVID'S football website</title>
+    <title>Read Aloud | DAVID'S football website</title>
     <meta
       name="description"
-      content="Leave a comment on DAVID'S football website."
+      content="Read Aloud settings: choose a voice style, accent, and speed, then read text out loud."
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -42,55 +42,80 @@
     <main id="main" class="page">
       <div class="wrap">
         <div class="page-head">
-          <h1 data-i18n="h_comments">Comments</h1>
+          <h1 data-i18n="h_read_aloud">Read aloud</h1>
           <p>
-            Leave a message for David. If you are connected through the home
-            Wi‑Fi server, everyone can see the comments here.
+            Choose a voice and read text out loud. On some devices you might see
+            more natural voices than others.
           </p>
         </div>
 
         <section class="panel">
           <div class="panel-body">
-            <form class="form" data-comments-form action="/comments/add-form" method="post">
+            <form class="form" data-read-aloud-form>
               <fieldset class="fieldset">
-                <legend>Write a comment</legend>
+                <legend>Voice</legend>
                 <div class="grid-2">
                   <label>
-                    Your name <span class="req">*</span>
-                    <input name="name" required placeholder="Example: Alex" />
+                    Style
+                    <select name="preset" data-ra-preset>
+                      <option value="happy">Happy</option>
+                      <option value="human">Human</option>
+                      <option value="warm">Warm</option>
+                      <option value="deep">Deep</option>
+                      <option value="bright">Bright</option>
+                      <option value="robot">Robot</option>
+                    </select>
                   </label>
                   <label>
-                    Topic
-                    <input name="topic" placeholder="Example: Friendly match" />
+                    Accent
+                    <select name="lang" data-ra-lang>
+                      <option value="en-GB" selected>English (UK)</option>
+                      <option value="en-US">English (US)</option>
+                    </select>
                   </label>
                 </div>
+
+                <div class="grid-2">
+                  <label>
+                    Voice
+                    <select name="voiceURI" data-ra-voice>
+                      <option value="" selected>Auto (recommended)</option>
+                    </select>
+                  </label>
+                  <label>
+                    Speed
+                    <input name="rate" data-ra-rate type="range" min="0.7" max="1.2" step="0.05" />
+                  </label>
+                </div>
+                <p class="hint">
+                  Tip: Keep Voice on Auto and just change Style to switch to a
+                  different voice vibe.
+                </p>
+              </fieldset>
+
+              <fieldset class="fieldset">
+                <legend>Text</legend>
                 <label>
-                  Comment <span class="req">*</span>
-                  <textarea
-                    name="message"
-                    required
-                    maxlength="400"
-                    placeholder="Write something nice..."
-                  ></textarea>
+                  What should it read?
+                  <textarea data-ra-text name="text">
+Welcome to DAVID'S football website. This website helps teams and schools sign up, arrange friendly matches, and join tournaments.</textarea
+                  >
                 </label>
-                <p class="hint">Max 400 characters.</p>
+                <p class="hint">It reads from this text box.</p>
               </fieldset>
 
               <div class="panel-foot">
-                <span class="small muted">Be kind. No personal info.</span>
+                <span class="small muted">Uses your browser’s text-to-speech.</span>
                 <div class="cta-row" style="margin: 0">
-                  <button class="btn btn-primary" type="submit" data-i18n="btn_post_comment">Post comment</button>
+                  <button class="btn btn-secondary" type="button" data-ra-play>
+                    Read aloud
+                  </button>
+                  <button class="btn btn-ghost" type="button" data-ra-stop>
+                    Stop
+                  </button>
                 </div>
               </div>
             </form>
-
-            <div class="section" style="padding-bottom: 0">
-              <div class="section-head">
-                <h2>Latest comments</h2>
-                <p>Refresh to see new comments from other devices.</p>
-              </div>
-              <div class="comments-list" data-comments-list></div>
-            </div>
           </div>
         </section>
       </div>
@@ -106,3 +131,4 @@
     <script type="module" src="./app.js"></script>
   </body>
 </html>
+

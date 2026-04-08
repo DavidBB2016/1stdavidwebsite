@@ -1318,6 +1318,10 @@ textarea:focus {
   box-shadow: var(--shadow);
 }
 
+.tts-page .tts-bar {
+  display: none;
+}
+
 .tts-btn {
   padding: 10px 12px;
   box-shadow: none;

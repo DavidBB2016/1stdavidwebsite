@@ -381,6 +381,179 @@ function setupTts() {
   }
 }
 
+function onReadAloudPage() {
+  const form = document.querySelector("[data-read-aloud-form]");
+  if (!form) return;
+
+  document.body.classList.add("tts-page");
+
+  const supported = typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  if (!supported) {
+    toast("Not supported", "Your browser does not support read aloud.");
+    return;
+  }
+
+  const presetSel = form.querySelector("[data-ra-preset]");
+  const langSel = form.querySelector("[data-ra-lang]");
+  const voiceSel = form.querySelector("[data-ra-voice]");
+  const rateRange = form.querySelector("[data-ra-rate]");
+  const textEl = form.querySelector("[data-ra-text]");
+  const playBtn = form.querySelector("[data-ra-play]");
+  const stopBtn = form.querySelector("[data-ra-stop]");
+
+  const saved = readJson(STORAGE_KEYS.tts, { voiceURI: "", preset: "happy", lang: "en-GB", rate: 1, pitch: 1 });
+
+  const PRESETS = {
+    human: { label: "Human", pitch: 1.02, rate: 0.96, prefer: ["enhanced", "premium", "natural", "siri"] },
+    happy: { label: "Happy", pitch: 1.26, rate: 1.12, prefer: ["siri", "enhanced", "premium", "natural"] },
+    warm: { label: "Warm", pitch: 1.0, rate: 0.98, prefer: ["siri", "enhanced", "premium", "natural"] },
+    deep: { label: "Deep", pitch: 0.82, rate: 0.92, prefer: ["daniel", "oliver", "alex"] },
+    bright: { label: "Bright", pitch: 1.12, rate: 1.06, prefer: ["samantha", "victoria", "karen"] },
+    robot: { label: "Robot", pitch: 0.68, rate: 1.1, prefer: ["fred", "robot"] },
+  };
+
+  function getVoices() {
+    const voices = window.speechSynthesis.getVoices() || [];
+    const en = voices.filter((v) => String(v.lang || "").toLowerCase().startsWith("en"));
+    const other = voices.filter((v) => !String(v.lang || "").toLowerCase().startsWith("en"));
+    return [...en, ...other];
+  }
+
+  function langMatches(voice, lang) {
+    const vLang = String(voice.lang || "").toLowerCase();
+    const want = String(lang || "").toLowerCase();
+    if (!want) return true;
+    if (want === "en-us") return vLang.startsWith("en-us") || vLang === "en-us";
+    if (want === "en-gb") return vLang.startsWith("en-gb") || vLang === "en-gb" || vLang === "en";
+    return vLang.startsWith(want);
+  }
+
+  function pickVoiceByPreset(voices, presetKey, lang) {
+    const preset = PRESETS[presetKey] || PRESETS.happy;
+    const en = voices.filter((v) => String(v.lang || "").toLowerCase().startsWith("en"));
+    const pool = en.filter((v) => langMatches(v, lang));
+    const candidates = pool.length ? pool : en;
+    if (!candidates.length) return null;
+    for (const snippet of preset.prefer) {
+      const hit = candidates.find((v) => String(v.name || "").toLowerCase().includes(snippet));
+      if (hit) return hit;
+    }
+    return candidates[0];
+  }
+
+  function fillVoices() {
+    const voices = getVoices();
+    voiceSel.innerHTML = "";
+    const optAuto = document.createElement("option");
+    optAuto.value = "";
+    optAuto.textContent = "Auto (recommended)";
+    voiceSel.appendChild(optAuto);
+    for (const v of voices) {
+      const opt = document.createElement("option");
+      opt.value = v.voiceURI;
+      const name = v.name || "Voice";
+      const lang = v.lang ? ` · ${v.lang}` : "";
+      opt.textContent = `${name}${lang}`;
+      voiceSel.appendChild(opt);
+    }
+    if (saved.voiceURI) voiceSel.value = saved.voiceURI;
+  }
+
+  function savePrefs() {
+    writeJson(STORAGE_KEYS.tts, {
+      voiceURI: voiceSel.value || "",
+      preset: presetSel.value || "happy",
+      lang: langSel.value || "en-GB",
+      rate: Number(rateRange.value) || 1,
+      pitch: 1,
+    });
+  }
+
+  function stop() {
+    window.speechSynthesis.cancel();
+    playBtn.disabled = false;
+    playBtn.textContent = "Read aloud";
+  }
+
+  function speak() {
+    const text = String(textEl?.value || "").trim();
+    if (!text) {
+      toast("Nothing to read", "Type some text first.");
+      return;
+    }
+
+    stop();
+
+    const preset = PRESETS[presetSel.value] || PRESETS.happy;
+    const lang = langSel.value || "en-GB";
+    const voices = getVoices();
+    const chosenVoice = voiceSel.value
+      ? voices.find((v) => v.voiceURI === voiceSel.value) || null
+      : pickVoiceByPreset(voices, presetSel.value, lang);
+
+    const chunks = text
+      .split(/\n{2,}/g)
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .flatMap((t) => {
+        if (t.length <= 900) return [t];
+        const parts = [];
+        for (let i = 0; i < t.length; i += 900) parts.push(t.slice(i, i + 900));
+        return parts;
+      });
+
+    let idx = 0;
+    playBtn.textContent = "Reading...";
+    playBtn.disabled = true;
+
+    const speakNext = () => {
+      if (idx >= chunks.length) {
+        playBtn.textContent = "Read aloud";
+        playBtn.disabled = false;
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(chunks[idx]);
+      utter.rate = Number(rateRange.value) || preset.rate;
+      utter.pitch = preset.pitch;
+      utter.lang = lang;
+      if (chosenVoice) utter.voice = chosenVoice;
+      utter.onend = () => {
+        idx += 1;
+        speakNext();
+      };
+      utter.onerror = () => {
+        playBtn.textContent = "Read aloud";
+        playBtn.disabled = false;
+        toast("Read aloud failed", "Your browser blocked speech, or no voice is available.");
+      };
+      window.speechSynthesis.speak(utter);
+    };
+
+    speakNext();
+  }
+
+  presetSel.value = saved.preset || "happy";
+  langSel.value = saved.lang || "en-GB";
+  rateRange.value = String(Math.min(1.2, Math.max(0.7, Number(saved.rate) || 1)));
+
+  fillVoices();
+  if (typeof window.speechSynthesis.onvoiceschanged !== "undefined") {
+    window.speechSynthesis.onvoiceschanged = () => fillVoices();
+  }
+
+  presetSel.addEventListener("change", () => {
+    const preset = PRESETS[presetSel.value] || PRESETS.happy;
+    rateRange.value = String(preset.rate);
+    savePrefs();
+  });
+  langSel.addEventListener("change", savePrefs);
+  voiceSel.addEventListener("change", savePrefs);
+  rateRange.addEventListener("input", savePrefs);
+
+  playBtn.addEventListener("click", speak);
+  stopBtn.addEventListener("click", stop);
+}
+
 function setupBackgroundLegend() {
   // Decorative background (kept subtle so text remains readable).
   if (document.querySelector("[data-bg-legend]")) return;
@@ -606,6 +779,7 @@ function setupLanguageSwitcher() {
       nav_search: "Search",
       nav_likes: "Likes",
       nav_donate: "Donate",
+      nav_read_aloud: "Read Aloud",
       nav_about: "About Me",
       h_index: "Get your team playing more football.",
       h_team_signup: "Team signup",
@@ -618,6 +792,7 @@ function setupLanguageSwitcher() {
       h_search: "Football search",
       h_likes: "Likes",
       h_donate: "Donate",
+      h_read_aloud: "Read aloud",
       h_about: "About me",
       btn_signup: "Sign up your team",
       btn_find_opponents: "Find opponents",
@@ -643,6 +818,7 @@ function setupLanguageSwitcher() {
       nav_search: "Cauta",
       nav_likes: "Like-uri",
       nav_donate: "Doneaza",
+      nav_read_aloud: "Citeste",
       nav_about: "Despre mine",
       h_index: "Fa ca echipa ta sa joace mai mult fotbal.",
       h_team_signup: "Inscriere echipa",
@@ -655,6 +831,7 @@ function setupLanguageSwitcher() {
       h_search: "Cautare fotbal",
       h_likes: "Like-uri",
       h_donate: "Doneaza",
+      h_read_aloud: "Citire cu voce",
       h_about: "Despre mine",
       btn_signup: "Inscrie echipa",
       btn_find_opponents: "Gaseste adversari",
@@ -680,6 +857,7 @@ function setupLanguageSwitcher() {
       nav_search: "Buscar",
       nav_likes: "Me gusta",
       nav_donate: "Donar",
+      nav_read_aloud: "Leer",
       nav_about: "Sobre mi",
       h_index: "Haz que tu equipo juegue mas futbol.",
       h_team_signup: "Registro del equipo",
@@ -692,6 +870,7 @@ function setupLanguageSwitcher() {
       h_search: "Buscar futbol",
       h_likes: "Me gusta",
       h_donate: "Donar",
+      h_read_aloud: "Leer en voz alta",
       h_about: "Sobre mi",
       btn_signup: "Registrar equipo",
       btn_find_opponents: "Encontrar rivales",
@@ -717,6 +896,7 @@ function setupLanguageSwitcher() {
       nav_search: "Rechercher",
       nav_likes: "J'aime",
       nav_donate: "Faire un don",
+      nav_read_aloud: "Lecture",
       nav_about: "A propos de moi",
       h_index: "Fais jouer ton equipe plus souvent.",
       h_team_signup: "Inscription equipe",
@@ -729,6 +909,7 @@ function setupLanguageSwitcher() {
       h_search: "Recherche football",
       h_likes: "J'aime",
       h_donate: "Faire un don",
+      h_read_aloud: "Lecture a voix haute",
       h_about: "A propos de moi",
       btn_signup: "Inscrire l'equipe",
       btn_find_opponents: "Trouver des adversaires",
@@ -2170,3 +2351,4 @@ setupFooterSocials();
 onFootballSearchPage();
 onLikesPage();
 onDonatePage();
+onReadAloudPage();
