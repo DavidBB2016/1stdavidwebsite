@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Live Games | DAVID'S football website</title>
+    <meta
+      name="description"
+      content="See which fixtures are live right now. Updates every second."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./index.html" aria-label="Kickoff Hub home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-title">DAVID'S football website</span>
+            <span class="brand-sub">Friendlies & Tournaments</span>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="./team-signup.html" data-i18n="nav_team_signup">Team Signup</a>
+          <a href="./match-request.html" data-i18n="nav_match_request">Match Request</a>
+          <a href="./tournaments.html" data-i18n="nav_tournaments">Tournaments</a>
+          <a href="./live.html" data-i18n="nav_live">Live Games</a>
+          <a href="./videos.html" data-i18n="nav_videos">Videos</a>
+          <a href="./comments.html" data-i18n="nav_comments">Comments</a>
+          <a href="./social.html" data-i18n="nav_social">Social</a>
+          <a href="./search.html" data-i18n="nav_search">Search</a>
+          <a href="./likes.html" data-i18n="nav_likes">Likes</a>
+          <a href="./donate.html" data-i18n="nav_donate">Donate</a>
+          <a href="./read-aloud.html" data-i18n="nav_read_aloud">Read Aloud</a>
+          <a href="./about.html" data-i18n="nav_about">About Me</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="page" data-live-page>
+      <div class="wrap">
+        <div class="page-head">
+          <h1 data-i18n="h_live">Live games</h1>
+          <p>
+            This page updates every second and shows which fixtures are LIVE
+            right now. Add your fixtures below. (To show live games from all
+            over the world, we would need a live-score API.)
+          </p>
+          <p class="mono">
+            Now:
+            <span data-live-now>--:--:--</span> · Live right now:
+            <span data-live-count>0</span>
+          </p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-body">
+            <h2 style="margin-top: 0">Live right now</h2>
+            <div class="list" data-live-list></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-body">
+            <h2 style="margin-top: 0">Upcoming and saved fixtures</h2>
+            <div class="list" data-live-saved-list></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-body">
+            <h2 style="margin-top: 0">Add a fixture</h2>
+            <form class="form" data-live-form>
+              <fieldset class="fieldset">
+                <legend>Fixture</legend>
+                <div class="grid-2">
+                  <label>
+                    Home team <span class="req">*</span>
+                    <input name="home" required />
+                  </label>
+                  <label>
+                    Away team <span class="req">*</span>
+                    <input name="away" required />
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    Kickoff (local time) <span class="req">*</span>
+                    <input name="kickoff" type="datetime-local" required />
+                  </label>
+                  <label>
+                    Match length (minutes) <span class="req">*</span>
+                    <input name="duration" type="number" min="10" max="240" value="90" required />
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    Competition (optional)
+                    <input name="competition" placeholder="Example: School league" />
+                  </label>
+                  <label>
+                    Venue (optional)
+                    <input name="venue" placeholder="Example: Eastbourne" />
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save fixture</button>
+                <button class="btn btn-ghost" type="button" data-live-clear>Clear all</button>
+              </div>
+            </form>
+            <p class="fine" style="margin-top: 12px">
+              Tip: This is saved on your device using localStorage.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p class="fine">DAVID'S football website</p>
+        <p class="fine"><a href="./index.html">Home</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+

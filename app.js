@@ -2,6 +2,7 @@ const STORAGE_KEYS = {
   teams: "kickoffhub_teams_v1",
   requests: "kickoffhub_match_requests_v1",
   tournaments: "kickoffhub_tournament_entries_v1",
+  fixtures: "kickoffhub_fixtures_v1",
   tts: "kickoffhub_tts_v1",
   presence: "kickoffhub_presence_v1",
   deviceId: "kickoffhub_device_id_v1",
@@ -769,12 +770,13 @@ function setupLanguageSwitcher() {
   const select = pill.querySelector("[data-lang-select]");
 
   const I18N = {
-	    en: {
-	      lang_label: "Language",
-	      nav_team_signup: "Team Signup",
-	      nav_match_request: "Match Request",
-	      nav_browse: "Browse",
+    en: {
+      lang_label: "Language",
+      nav_team_signup: "Team Signup",
+      nav_match_request: "Match Request",
+      nav_browse: "Browse",
       nav_tournaments: "Tournaments",
+      nav_live: "Live Games",
       nav_videos: "Videos",
       nav_comments: "Comments",
       nav_social: "Social",
@@ -788,6 +790,7 @@ function setupLanguageSwitcher() {
       h_match_request: "Post a match request",
       h_browse: "Browse",
       h_tournaments: "Tournament entry",
+      h_live: "Live games",
       h_videos: "Videos",
       h_comments: "Comments",
       h_social: "Social",
@@ -795,13 +798,13 @@ function setupLanguageSwitcher() {
       h_likes: "Likes",
       h_donate: "Donate",
       h_read_aloud: "Read aloud",
-	      h_about: "About me",
-	      btn_signup: "Sign up your team",
-	      btn_find_opponents: "Post a match request",
-	      btn_save_team: "Save team",
-	      btn_post_request: "Post request",
-	      btn_save_entry: "Save entry",
-	      btn_add_video: "Add video",
+      h_about: "About me",
+      btn_signup: "Sign up your team",
+      btn_find_opponents: "Post a match request",
+      btn_save_team: "Save team",
+      btn_post_request: "Post request",
+      btn_save_entry: "Save entry",
+      btn_add_video: "Add video",
       btn_post_comment: "Post comment",
       btn_save_social: "Save socials",
       btn_search: "Search",
@@ -814,6 +817,7 @@ function setupLanguageSwitcher() {
       nav_match_request: "Cerere meci",
       nav_browse: "Cauta",
       nav_tournaments: "Turnee",
+      nav_live: "Meciuri live",
       nav_videos: "Videoclipuri",
       nav_comments: "Comentarii",
       nav_social: "Social",
@@ -827,6 +831,7 @@ function setupLanguageSwitcher() {
       h_match_request: "Publica o cerere de meci",
       h_browse: "Cauta",
       h_tournaments: "Inscriere la turneu",
+      h_live: "Meciuri live",
       h_videos: "Videoclipuri",
       h_comments: "Comentarii",
       h_social: "Social",
@@ -834,13 +839,13 @@ function setupLanguageSwitcher() {
       h_likes: "Like-uri",
       h_donate: "Doneaza",
       h_read_aloud: "Citire cu voce",
-	      h_about: "Despre mine",
-	      btn_signup: "Inscrie echipa",
-	      btn_find_opponents: "Cere un meci",
-	      btn_save_team: "Salveaza echipa",
-	      btn_post_request: "Publica cererea",
-	      btn_save_entry: "Salveaza",
-	      btn_add_video: "Adauga video",
+      h_about: "Despre mine",
+      btn_signup: "Inscrie echipa",
+      btn_find_opponents: "Cere un meci",
+      btn_save_team: "Salveaza echipa",
+      btn_post_request: "Publica cererea",
+      btn_save_entry: "Salveaza",
+      btn_add_video: "Adauga video",
       btn_post_comment: "Trimite comentariu",
       btn_save_social: "Salveaza",
       btn_search: "Cauta",
@@ -853,6 +858,7 @@ function setupLanguageSwitcher() {
       nav_match_request: "Solicitud de partido",
       nav_browse: "Buscar",
       nav_tournaments: "Torneos",
+      nav_live: "Partidos en vivo",
       nav_videos: "Videos",
       nav_comments: "Comentarios",
       nav_social: "Social",
@@ -866,6 +872,7 @@ function setupLanguageSwitcher() {
       h_match_request: "Publica una solicitud",
       h_browse: "Buscar",
       h_tournaments: "Inscripcion al torneo",
+      h_live: "Partidos en vivo",
       h_videos: "Videos",
       h_comments: "Comentarios",
       h_social: "Social",
@@ -873,13 +880,13 @@ function setupLanguageSwitcher() {
       h_likes: "Me gusta",
       h_donate: "Donar",
       h_read_aloud: "Leer en voz alta",
-	      h_about: "Sobre mi",
-	      btn_signup: "Registrar equipo",
-	      btn_find_opponents: "Pedir un partido",
-	      btn_save_team: "Guardar equipo",
-	      btn_post_request: "Publicar",
-	      btn_save_entry: "Guardar",
-	      btn_add_video: "Agregar video",
+      h_about: "Sobre mi",
+      btn_signup: "Registrar equipo",
+      btn_find_opponents: "Pedir un partido",
+      btn_save_team: "Guardar equipo",
+      btn_post_request: "Publicar",
+      btn_save_entry: "Guardar",
+      btn_add_video: "Agregar video",
       btn_post_comment: "Publicar comentario",
       btn_save_social: "Guardar",
       btn_search: "Buscar",
@@ -892,6 +899,7 @@ function setupLanguageSwitcher() {
       nav_match_request: "Demande de match",
       nav_browse: "Parcourir",
       nav_tournaments: "Tournois",
+      nav_live: "Matchs en direct",
       nav_videos: "Videos",
       nav_comments: "Commentaires",
       nav_social: "Social",
@@ -905,6 +913,7 @@ function setupLanguageSwitcher() {
       h_match_request: "Publier une demande",
       h_browse: "Parcourir",
       h_tournaments: "Inscription au tournoi",
+      h_live: "Matchs en direct",
       h_videos: "Videos",
       h_comments: "Commentaires",
       h_social: "Social",
@@ -912,13 +921,13 @@ function setupLanguageSwitcher() {
       h_likes: "J'aime",
       h_donate: "Faire un don",
       h_read_aloud: "Lecture a voix haute",
-	      h_about: "A propos de moi",
-	      btn_signup: "Inscrire l'equipe",
-	      btn_find_opponents: "Demander un match",
-	      btn_save_team: "Enregistrer",
-	      btn_post_request: "Publier",
-	      btn_save_entry: "Enregistrer",
-	      btn_add_video: "Ajouter une video",
+      h_about: "A propos de moi",
+      btn_signup: "Inscrire l'equipe",
+      btn_find_opponents: "Demander un match",
+      btn_save_team: "Enregistrer",
+      btn_post_request: "Publier",
+      btn_save_entry: "Enregistrer",
+      btn_add_video: "Ajouter une video",
       btn_post_comment: "Publier un commentaire",
       btn_save_social: "Enregistrer",
       btn_search: "Rechercher",
@@ -2435,6 +2444,208 @@ function onBrowsePage() {
   render();
 }
 
+function onLiveGamesPage() {
+  const root = document.querySelector("[data-live-page]");
+  if (!root) return;
+
+  const nowEl = root.querySelector("[data-live-now]");
+  const countEl = root.querySelector("[data-live-count]");
+  const liveListEl = root.querySelector("[data-live-list]");
+  const savedListEl = root.querySelector("[data-live-saved-list]");
+  const form = root.querySelector("[data-live-form]");
+  const clearBtn = root.querySelector("[data-live-clear]");
+
+  if (!liveListEl || !savedListEl || !form) return;
+
+  let fixtures = readJson(STORAGE_KEYS.fixtures, []);
+  if (!Array.isArray(fixtures)) fixtures = [];
+
+  function save() {
+    writeJson(STORAGE_KEYS.fixtures, fixtures);
+  }
+
+  function pad2(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function formatHms(ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const hh = Math.floor(s / 3600);
+    const mm = Math.floor((s % 3600) / 60);
+    const ss = s % 60;
+    if (hh > 0) return `${hh}:${pad2(mm)}:${pad2(ss)}`;
+    return `${mm}:${pad2(ss)}`;
+  }
+
+  function safeDateMs(isoOrLocal) {
+    const ms = new Date(isoOrLocal).getTime();
+    return Number.isFinite(ms) ? ms : NaN;
+  }
+
+  function statusForFixture(f, nowMs) {
+    const kickoffMs = safeDateMs(f.kickoff_iso);
+    const durationMins = Number(f.duration_mins || 90) || 90;
+    const durationMs = Math.max(1, durationMins) * 60 * 1000;
+    const endMs = kickoffMs + durationMs;
+
+    if (!Number.isFinite(kickoffMs)) return { kind: "invalid" };
+    if (nowMs < kickoffMs) return { kind: "upcoming", kickoffMs, endMs, durationMs };
+    if (nowMs >= kickoffMs && nowMs < endMs) return { kind: "live", kickoffMs, endMs, durationMs };
+    return { kind: "finished", kickoffMs, endMs, durationMs };
+  }
+
+  function renderFixtureItem(f, nowMs) {
+    const st = statusForFixture(f, nowMs);
+    const title = `${f.home || "Home"} vs ${f.away || "Away"}`;
+
+    let badge = `<span class="source-badge">SAVED</span>`;
+    let meta = "";
+    if (st.kind === "live") {
+      badge = `<span class="source-badge">LIVE</span>`;
+      meta = `Elapsed: ${formatHms(nowMs - st.kickoffMs)} · Left: ${formatHms(st.endMs - nowMs)}`;
+    } else if (st.kind === "upcoming") {
+      badge = `<span class="source-badge">UPCOMING</span>`;
+      meta = `Starts in: ${formatHms(st.kickoffMs - nowMs)}`;
+    } else if (st.kind === "finished") {
+      badge = `<span class="source-badge">FINISHED</span>`;
+      meta = `Ended ${formatHms(nowMs - st.endMs)} ago`;
+    } else {
+      badge = `<span class="source-badge">INVALID TIME</span>`;
+      meta = "Fix the kickoff time and save again.";
+    }
+
+    const details = [
+      f.competition ? `Competition: ${escapeText(String(f.competition))}` : "",
+      f.venue ? `Venue: ${escapeText(String(f.venue))}` : "",
+      f.kickoff_iso ? `Kickoff: ${escapeText(new Date(f.kickoff_iso).toLocaleString())}` : "",
+      f.duration_mins ? `Length: ${escapeText(String(f.duration_mins))} mins` : "",
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    return `
+      <article class="item">
+        <div class="item-head">
+          <h3 class="item-title">${escapeText(title)}</h3>
+          <div class="item-meta">${badge}</div>
+        </div>
+        <p class="small">${escapeText(meta)}</p>
+        ${details ? `<p class="small muted">${details}</p>` : ""}
+        <div class="cta-row" style="margin: 0">
+          <button class="btn btn-ghost" type="button" data-live-delete="${escapeText(f.id)}">Delete</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function render() {
+    const now = new Date();
+    const nowMs = now.getTime();
+    if (nowEl) {
+      nowEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+    }
+
+    const live = fixtures.filter((f) => statusForFixture(f, nowMs).kind === "live");
+    const rest = fixtures.filter((f) => statusForFixture(f, nowMs).kind !== "live");
+
+    if (countEl) countEl.textContent = String(live.length);
+
+    if (!live.length) {
+      liveListEl.innerHTML = `<p class="muted">No live games right now. Add fixtures below.</p>`;
+    } else {
+      liveListEl.innerHTML = live.map((f) => renderFixtureItem(f, nowMs)).join("");
+    }
+
+    if (!rest.length) {
+      savedListEl.innerHTML = `<p class="muted">No upcoming fixtures saved yet.</p>`;
+    } else {
+      // Show upcoming first, then finished/invalid.
+      const order = (f) => {
+        const st = statusForFixture(f, nowMs);
+        if (st.kind === "upcoming") return 0;
+        if (st.kind === "finished") return 1;
+        return 2;
+      };
+      savedListEl.innerHTML = rest
+        .slice()
+        .sort((a, b) => order(a) - order(b))
+        .map((f) => renderFixtureItem(f, nowMs))
+        .join("");
+    }
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const home = String(fd.get("home") || "").trim();
+    const away = String(fd.get("away") || "").trim();
+    const kickoffLocal = String(fd.get("kickoff") || "").trim();
+    const duration = Number(String(fd.get("duration") || "90").trim());
+    const competition = String(fd.get("competition") || "").trim();
+    const venue = String(fd.get("venue") || "").trim();
+
+    if (!home || !away || !kickoffLocal) {
+      toast("Missing details", "Home, away, and kickoff time are required.");
+      return;
+    }
+    if (!Number.isFinite(duration) || duration < 10 || duration > 240) {
+      toast("Invalid match length", "Please choose a match length between 10 and 240 minutes.");
+      return;
+    }
+
+    // datetime-local returns local time without timezone, but Date(...) interprets it as local time.
+    const kickoffMs = safeDateMs(kickoffLocal);
+    if (!Number.isFinite(kickoffMs)) {
+      toast("Invalid kickoff", "Please choose a valid kickoff date/time.");
+      return;
+    }
+
+    const fixture = {
+      id: uid("fx"),
+      created_at: nowIso(),
+      home,
+      away,
+      kickoff_iso: new Date(kickoffMs).toISOString(),
+      duration_mins: duration,
+      competition,
+      venue,
+    };
+
+    fixtures.unshift(fixture);
+    save();
+    form.reset();
+    const durEl = form.querySelector("input[name=duration]");
+    if (durEl) durEl.value = "90";
+    toast("Saved", "Fixture saved. This list updates every second.");
+    render();
+  });
+
+  clearBtn?.addEventListener("click", () => {
+    if (!fixtures.length) return;
+    fixtures = [];
+    save();
+    toast("Cleared", "All fixtures removed from this device.");
+    render();
+  });
+
+  function handleDeleteClick(e) {
+    const btn = e.target && e.target.closest ? e.target.closest("[data-live-delete]") : null;
+    if (!btn) return;
+    const id = btn.getAttribute("data-live-delete") || "";
+    const before = fixtures.length;
+    fixtures = fixtures.filter((f) => f.id !== id);
+    if (fixtures.length !== before) {
+      save();
+      render();
+    }
+  }
+  liveListEl.addEventListener("click", handleDeleteClick);
+  savedListEl.addEventListener("click", handleDeleteClick);
+
+  render();
+  window.setInterval(render, 1000);
+}
+
 setActiveNav();
 setupRevealStagger();
 setupBackgroundLegend();
@@ -2446,6 +2657,7 @@ onTeamSignupPage();
 onMatchRequestPage();
 onTournamentPage();
 onBrowsePage();
+onLiveGamesPage();
 onVideosPage();
 onCommentsPage();
 onSocialPage();
