@@ -9,7 +9,6 @@
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/index.html</loc></url>
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/team-signup.html</loc></url>
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/match-request.html</loc></url>
-  <url><loc>https://YOUR-PUBLISHED-DOMAIN/browse.html</loc></url>
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/tournaments.html</loc></url>
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/videos.html</loc></url>
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/comments.html</loc></url>
@@ -17,4 +16,3 @@
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/search.html</loc></url>
   <url><loc>https://YOUR-PUBLISHED-DOMAIN/about.html</loc></url>
 </urlset>
-
