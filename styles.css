@@ -218,57 +218,8 @@ a:hover {
   display: flex;
   gap: 14px;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: flex-end;
-  min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-}
-
-.nav::-webkit-scrollbar {
-  display: none;
-}
-
-.nav-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.nav-scroll {
-  display: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.18);
-  color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  flex: 0 0 auto;
-  font-weight: 900;
-  font-size: 18px;
-  line-height: 1;
-}
-
-.nav-wrap.has-overflow .nav-scroll {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-scroll:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.nav-scroll:focus {
-  outline: none;
-  box-shadow: var(--focus);
 }
 
 .nav-toggle {
@@ -1483,10 +1434,6 @@ textarea:focus {
   .nav-toggle {
     display: inline-flex;
     align-self: flex-start;
-  }
-
-  .nav-scroll {
-    display: none !important;
   }
 
   .nav {
