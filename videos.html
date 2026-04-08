@@ -68,6 +68,21 @@
                     />
                   </label>
                 </div>
+                <div class="grid-2">
+                  <label>
+                    Type
+                    <select name="kind">
+                      <option value="highlights" selected>Highlights</option>
+                      <option value="training">Training</option>
+                      <option value="match">Match</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                  <label>
+                    Sport
+                    <input value="Football" readonly />
+                  </label>
+                </div>
                 <label>
                   Description
                   <textarea name="description" placeholder="Optional notes"></textarea>
@@ -85,6 +100,33 @@
                 </div>
               </div>
             </form>
+
+            <div class="section" style="padding-bottom: 0">
+              <div class="section-head">
+                <h2>Football scroll</h2>
+                <p>
+                  Scroll like an app. This feed only shows football videos you
+                  added here.
+                </p>
+              </div>
+
+              <div class="feed-toolbar">
+                <label>
+                  Show
+                  <select data-feed-kind>
+                    <option value="all" selected>All</option>
+                    <option value="highlights">Highlights</option>
+                    <option value="training">Training</option>
+                    <option value="match">Match</option>
+                  </select>
+                </label>
+                <button class="btn btn-ghost" type="button" data-feed-top>
+                  Back to top
+                </button>
+              </div>
+
+              <div class="football-feed" data-football-feed></div>
+            </div>
 
             <div class="section" style="padding-bottom: 0">
               <div class="section-head">

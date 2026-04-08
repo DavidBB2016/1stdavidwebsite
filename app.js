@@ -1032,14 +1032,28 @@ function toEmbedUrl(url) {
 function onVideosPage() {
   const form = document.querySelector("[data-video-form]");
   const list = document.querySelector("[data-video-list]");
+  const feed = document.querySelector("[data-football-feed]");
+  const feedKindSel = document.querySelector("[data-feed-kind]");
+  const feedTopBtn = document.querySelector("[data-feed-top]");
   if (!form || !list) return;
+
+  function normalizeKind(value) {
+    const v = String(value || "").toLowerCase();
+    if (v === "training" || v === "match" || v === "other" || v === "highlights") return v;
+    return "highlights";
+  }
 
   function render() {
     const videos = readJson(STORAGE_KEYS.videos, []);
     if (!videos.length) {
       list.innerHTML = `<p class="muted">No videos yet. Add one above.</p>`;
+      if (feed) {
+        feed.innerHTML = `<p class="muted">No football videos yet. Add one above.</p>`;
+      }
       return;
     }
+
+    renderFeed(videos);
 
     list.innerHTML = videos
       .map((v) => {
@@ -1113,6 +1127,8 @@ function onVideosPage() {
       title: data.title,
       url: data.url,
       description: data.description || "",
+      sport: "football",
+      kind: normalizeKind(data.kind),
     });
     form.reset();
     toast("Video added", "It is now in your gallery.");
@@ -1128,6 +1144,64 @@ function onVideosPage() {
     if (!ok) return;
     removeVideo(id);
     render();
+  });
+
+  function isFootball(v) {
+    // Back-compat: older items without sport are treated as football.
+    const sport = String(v?.sport || "football").toLowerCase();
+    return sport === "football" || sport === "soccer";
+  }
+
+  function renderFeed(videos) {
+    if (!feed) return;
+    const kind = String(feedKindSel?.value || "all");
+    const filtered = videos.filter(isFootball).filter((v) => {
+      if (kind === "all") return true;
+      return String(v.kind || "highlights") === kind;
+    });
+
+    if (!filtered.length) {
+      feed.innerHTML = `<p class="muted">No videos for this filter yet. Try adding more.</p>`;
+      return;
+    }
+
+    feed.innerHTML = filtered
+      .map((v) => {
+        const embed = toEmbedUrl(v.url);
+        if (!embed) return "";
+        const kindLabel = (v.kind || "highlights").toString();
+        return `
+          <article class="feed-item">
+            <div class="feed-frame">
+              <iframe
+                src="${escapeText(embed)}"
+                title="${escapeText(v.title || "Video")}"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+              ></iframe>
+            </div>
+            <div class="feed-meta">
+              <div class="feed-title">${escapeText(v.title || "Video")}</div>
+              <div class="tag-row">
+                <span class="tag">Football</span>
+                <span class="tag">${escapeText(kindLabel)}</span>
+              </div>
+              ${v.description ? `<p class="feed-desc">${escapeText(v.description)}</p>` : ""}
+              <div class="feed-actions">
+                <a class="btn btn-ghost" href="${escapeText(v.url)}" target="_blank" rel="noreferrer">Open</a>
+              </div>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  feedKindSel?.addEventListener("change", render);
+  feedTopBtn?.addEventListener("click", () => {
+    feed?.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   render();
