@@ -53,39 +53,49 @@
           <div class="panel-body">
             <form class="form" data-football-search>
               <fieldset class="fieldset">
-                <legend>Search</legend>
-                <div class="grid-2">
-                  <label>
-                    Search for <span class="req">*</span>
+                <legend>Football search</legend>
+                <div class="search-hero">
+                  <div class="search-mark" aria-hidden="true">Football Search</div>
+                  <div class="search-row">
                     <input
+                      class="search-input"
                       name="q"
                       required
                       data-i18n-placeholder="ph_search"
                       placeholder="Example: Lamine Yamal highlights"
+                      autocomplete="off"
                     />
-                  </label>
-                  <label>
-                    Where?
-                    <select name="provider">
-                      <option value="google" selected>Google</option>
-                      <option value="wikipedia">Wikipedia</option>
-                      <option value="youtube">YouTube</option>
-                      <option value="ddg">DuckDuckGo</option>
-                    </select>
-                  </label>
+                    <button class="btn btn-primary" type="submit" data-i18n="btn_search">
+                      Search
+                    </button>
+                  </div>
+
+                  <div class="search-options">
+                    <label class="check">
+                      <input type="checkbox" name="only_football" checked />
+                      Only football
+                    </label>
+                    <label>
+                      Results
+                      <select name="mode" data-search-mode>
+                        <option value="wiki" selected>Show on this page (Wikipedia)</option>
+                        <option value="google">Open Google</option>
+                        <option value="youtube">Open YouTube</option>
+                      </select>
+                    </label>
+                  </div>
+                  <p class="hint">
+                    Tip: “Show on this page” uses Wikipedia results and is the
+                    closest to a real Google-style results list without needing
+                    accounts or API keys.
+                  </p>
                 </div>
-                <p class="hint">
-                  This opens results in a new tab. Works best when the site is
-                  published online.
-                </p>
               </fieldset>
 
               <div class="panel-foot">
                 <span class="small muted">Tip: Try the quick searches below.</span>
                 <div class="cta-row" style="margin: 0">
-                  <button class="btn btn-primary" type="submit" data-i18n="btn_search">
-                    Search
-                  </button>
+                  <button class="btn btn-ghost" type="button" data-search-clear>Clear</button>
                 </div>
               </div>
             </form>
@@ -115,6 +125,16 @@
                   Training drills (adults)
                 </button>
               </div>
+            </div>
+
+            <div class="section" style="padding-bottom: 0">
+              <div class="section-head">
+                <h2>Results</h2>
+                <p class="muted" data-search-status>
+                  Type a search and press Search to see results here.
+                </p>
+              </div>
+              <div class="results" data-search-results></div>
             </div>
           </div>
         </section>

@@ -1648,41 +1648,142 @@ function onSocialPage() {
 function onFootballSearchPage() {
   const form = document.querySelector("[data-football-search]");
   const quick = document.querySelector("[data-quick-searches]");
+  const resultsEl = document.querySelector("[data-search-results]");
+  const statusEl = document.querySelector("[data-search-status]");
+  const modeSel = document.querySelector("[data-search-mode]");
+  const clearBtn = document.querySelector("[data-search-clear]");
   if (!form) return;
 
-  function buildUrl(provider, q) {
-    const query = encodeURIComponent(q);
+  function buildUrl(provider, q, onlyFootball) {
+    const queryText = onlyFootball ? `football ${q}` : q;
+    const query = encodeURIComponent(queryText);
     if (provider === "wikipedia") return `https://en.wikipedia.org/wiki/Special:Search?search=${query}`;
     if (provider === "youtube") return `https://www.youtube.com/results?search_query=${query}`;
     if (provider === "ddg") return `https://duckduckgo.com/?q=${query}`;
     return `https://www.google.com/search?q=${query}`;
   }
 
-  function runSearch(q, provider) {
-    const url = buildUrl(provider, q);
+  function runSearch(q, provider, onlyFootball) {
+    const url = buildUrl(provider, q, onlyFootball);
     window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function setStatus(text) {
+    if (!statusEl) return;
+    statusEl.textContent = text;
+  }
+
+  function setResultsHtml(html) {
+    if (!resultsEl) return;
+    resultsEl.innerHTML = html;
+  }
+
+  function stripHtml(html) {
+    try {
+      const div = document.createElement("div");
+      div.innerHTML = String(html || "");
+      return (div.textContent || "").trim();
+    } catch {
+      return String(html || "").replace(/<[^>]*>/g, "").trim();
+    }
+  }
+
+  async function wikiSearch(q, onlyFootball) {
+    if (!resultsEl) {
+      runSearch(q, "google", onlyFootball);
+      return;
+    }
+
+    const queryText = onlyFootball ? `football ${q}` : q;
+    setStatus("Searching Wikipedia...");
+    setResultsHtml(`<p class="muted">Loading results...</p>`);
+
+    try {
+      const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&utf8=1&srlimit=8&srsearch=${encodeURIComponent(
+        queryText
+      )}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const data = await res.json();
+      const items = data?.query?.search;
+      if (!Array.isArray(items) || items.length === 0) {
+        setStatus("No results. Try different words.");
+        setResultsHtml(`<p class="muted">No results found.</p>`);
+        return;
+      }
+
+      setStatus(`Top results for: ${queryText}`);
+      const html = items
+        .map((it) => {
+          const title = it?.title || "Result";
+          const snippet = stripHtml(it?.snippet || "");
+          const pageTitle = String(title).split(" ").join("_");
+          const pageUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
+          return `
+            <article class="result">
+              <a class="result-title" href="${escapeText(pageUrl)}" target="_blank" rel="noreferrer">${escapeText(title)}</a>
+              <div class="result-url">${escapeText(pageUrl)}</div>
+              <p class="result-snippet">${escapeText(snippet)}</p>
+            </article>
+          `;
+        })
+        .join("");
+      setResultsHtml(html);
+    } catch {
+      setStatus("Could not load results. Try Open Google.");
+      setResultsHtml(`<p class="muted">Wikipedia search failed in this browser/network.</p>`);
+    }
   }
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const data = collectForm(form);
     const q = String(data.q || "").trim();
-    const provider = String(data.provider || "google");
+    const mode = String(data.mode || "wiki");
+    const onlyFootball = data.only_football === "on" || data.only_football === "true" || data.only_football === true;
     if (!q) {
       toast("Missing search", "Type something to search.");
       form.querySelector("[name=\"q\"]")?.focus();
       return;
     }
-    runSearch(q, provider);
+
+    if (mode === "wiki") {
+      wikiSearch(q, onlyFootball);
+      return;
+    }
+    if (mode === "youtube") {
+      runSearch(q, "youtube", onlyFootball);
+      return;
+    }
+    runSearch(q, "google", onlyFootball);
   });
 
   quick?.addEventListener("click", (e) => {
     const btn = e.target?.closest?.("[data-quick]");
     if (!btn) return;
     const q = btn.getAttribute("data-quick") || "";
-    const provider = form.querySelector("[name=\"provider\"]")?.value || "google";
-    runSearch(q, provider);
+    const mode = modeSel?.value || "wiki";
+    const onlyFootball = form.querySelector("[name=\"only_football\"]")?.checked ?? true;
+    if (mode === "wiki") {
+      wikiSearch(q, onlyFootball);
+      return;
+    }
+    if (mode === "youtube") {
+      runSearch(q, "youtube", onlyFootball);
+      return;
+    }
+    runSearch(q, "google", onlyFootball);
   });
+
+  clearBtn?.addEventListener("click", () => {
+    form.querySelector("[name=\"q\"]")?.focus();
+    form.querySelector("[name=\"q\"]").value = "";
+    setStatus("Type a search and press Search to see results here.");
+    setResultsHtml("");
+  });
+
+  // Default state.
+  if (resultsEl) setResultsHtml("");
 }
 
 function onLikesPage() {
