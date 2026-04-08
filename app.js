@@ -626,8 +626,8 @@ function setupBackgroundLegend() {
 function setupPresenceCounter() {
   // With server.rb running, this shows how many devices are active on the LAN server.
   // Without it, we fall back to a device-local tab counter.
-  const header = document.querySelector(".site-header .header-inner");
-  if (!header) return;
+  const nav = document.querySelector(".site-header .nav");
+  if (!nav) return;
   if (document.querySelector("[data-online-pill]")) return;
 
   const pill = document.createElement("div");
@@ -640,7 +640,7 @@ function setupPresenceCounter() {
     <span class="online-count" data-online-count>1</span>
   `;
 
-  header.appendChild(pill);
+  nav.appendChild(pill);
 
   const countEl = pill.querySelector("[data-online-count]");
 
@@ -742,8 +742,8 @@ function setupPresenceCounter() {
 }
 
 function setupLanguageSwitcher() {
-  const header = document.querySelector(".site-header .header-inner");
-  if (!header) return;
+  const nav = document.querySelector(".site-header .nav");
+  if (!nav) return;
   if (document.querySelector("[data-lang-pill]")) return;
 
   const supported = {
@@ -764,7 +764,7 @@ function setupLanguageSwitcher() {
         .join("")}
     </select>
   `;
-  header.appendChild(pill);
+  nav.appendChild(pill);
 
   const select = pill.querySelector("[data-lang-select]");
 
@@ -1012,8 +1012,8 @@ function setupMobileNav() {
 }
 
 function setupLikeButton() {
-  const header = document.querySelector(".site-header .header-inner");
-  if (!header) return;
+  const nav = document.querySelector(".site-header .nav");
+  if (!nav) return;
   if (document.querySelector("[data-like-pill]")) return;
 
   const pill = document.createElement("div");
@@ -1030,7 +1030,7 @@ function setupLikeButton() {
     <span class="like-count" aria-label="Like count" data-like-count>0</span>
   `;
 
-  header.appendChild(pill);
+  nav.appendChild(pill);
 
   const deviceId = getDeviceId();
   const likeBtn = pill.querySelector("[data-like-btn]");

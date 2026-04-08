@@ -167,6 +167,7 @@ a:hover {
   justify-content: space-between;
   padding: 16px 0;
   gap: 14px;
+  min-width: 0;
 }
 
 .brand {
@@ -217,8 +218,17 @@ a:hover {
   display: flex;
   gap: 14px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-toggle {
@@ -271,6 +281,7 @@ a:hover {
   border-radius: 999px;
   border: 1px solid transparent;
   color: var(--muted);
+  flex: 0 0 auto;
 }
 
 .nav a[aria-current="page"] {
