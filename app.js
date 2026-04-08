@@ -1011,6 +1011,65 @@ function setupMobileNav() {
   });
 }
 
+function setupNavScrollButtons() {
+  const nav = document.querySelector(".site-header .nav");
+  if (!nav) return;
+  if (document.querySelector("[data-nav-scroll-wrap]")) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "nav-wrap";
+  wrap.setAttribute("data-nav-scroll-wrap", "");
+
+  const parent = nav.parentNode;
+  if (!parent) return;
+  parent.insertBefore(wrap, nav);
+  wrap.appendChild(nav);
+
+  const leftBtn = document.createElement("button");
+  leftBtn.type = "button";
+  leftBtn.className = "nav-scroll nav-scroll-left";
+  leftBtn.setAttribute("aria-label", "Scroll tabs left");
+  leftBtn.innerHTML = `<span aria-hidden="true">‹</span>`;
+
+  const rightBtn = document.createElement("button");
+  rightBtn.type = "button";
+  rightBtn.className = "nav-scroll nav-scroll-right";
+  rightBtn.setAttribute("aria-label", "Scroll tabs right");
+  rightBtn.innerHTML = `<span aria-hidden="true">›</span>`;
+
+  wrap.insertBefore(leftBtn, nav);
+  wrap.appendChild(rightBtn);
+
+  function scrollByAmount(dir) {
+    const amount = Math.max(220, Math.round(nav.clientWidth * 0.65));
+    nav.scrollBy({ left: dir * amount, behavior: "smooth" });
+  }
+
+  function update() {
+    // Only show when overflow exists.
+    const max = nav.scrollWidth - nav.clientWidth;
+    const hasOverflow = max > 2;
+    wrap.classList.toggle("has-overflow", hasOverflow);
+    if (!hasOverflow) {
+      leftBtn.disabled = true;
+      rightBtn.disabled = true;
+      return;
+    }
+    const x = nav.scrollLeft;
+    leftBtn.disabled = x <= 1;
+    rightBtn.disabled = x >= max - 1;
+  }
+
+  leftBtn.addEventListener("click", () => scrollByAmount(-1));
+  rightBtn.addEventListener("click", () => scrollByAmount(1));
+  nav.addEventListener("scroll", () => update(), { passive: true });
+  window.addEventListener("resize", () => update());
+
+  // Initial measurement after layout.
+  requestAnimationFrame(update);
+  setTimeout(update, 250);
+}
+
 function setupLikeButton() {
   const nav = document.querySelector(".site-header .nav");
   if (!nav) return;
@@ -2441,6 +2500,7 @@ setupBackgroundLegend();
 setupPresenceCounter();
 setupLanguageSwitcher();
 setupMobileNav();
+setupNavScrollButtons();
 setupLikeButton();
 onTeamSignupPage();
 onMatchRequestPage();
