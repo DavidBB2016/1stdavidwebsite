@@ -1165,11 +1165,19 @@ function onVideosPage() {
       return;
     }
 
+    function providerLabel(url) {
+      const u = String(url || "");
+      if (u.includes("youtu")) return "YouTube";
+      if (u.includes("vimeo")) return "Vimeo";
+      return "Video";
+    }
+
     feed.innerHTML = filtered
       .map((v) => {
         const embed = toEmbedUrl(v.url);
         if (!embed) return "";
         const kindLabel = (v.kind || "highlights").toString();
+        const provider = providerLabel(v.url);
         return `
           <article class="feed-item">
             <div class="feed-frame">
@@ -1181,16 +1189,31 @@ function onVideosPage() {
                 allowfullscreen
                 referrerpolicy="strict-origin-when-cross-origin"
               ></iframe>
-            </div>
-            <div class="feed-meta">
-              <div class="feed-title">${escapeText(v.title || "Video")}</div>
-              <div class="tag-row">
-                <span class="tag">Football</span>
-                <span class="tag">${escapeText(kindLabel)}</span>
-              </div>
-              ${v.description ? `<p class="feed-desc">${escapeText(v.description)}</p>` : ""}
-              <div class="feed-actions">
-                <a class="btn btn-ghost" href="${escapeText(v.url)}" target="_blank" rel="noreferrer">Open</a>
+
+              <div class="feed-ui" aria-hidden="true">
+                <div class="feed-ui-top">
+                  <span class="source-badge" data-source="${escapeText(provider.toLowerCase())}">
+                    ${escapeText(provider)}
+                  </span>
+                </div>
+                <div class="feed-ui-bottom">
+                  <div class="feed-ui-left">
+                    <div class="feed-title">${escapeText(v.title || "Video")}</div>
+                    <div class="tag-row">
+                      <span class="tag">Football</span>
+                      <span class="tag">${escapeText(kindLabel)}</span>
+                    </div>
+                    ${v.description ? `<p class="feed-desc">${escapeText(v.description)}</p>` : ""}
+                  </div>
+                  <div class="feed-ui-right">
+                    <a class="icon-btn" href="${escapeText(v.url)}" target="_blank" rel="noreferrer" aria-label="Open link">
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                    <button class="icon-btn" type="button" data-copy-link="${escapeText(v.url)}" aria-label="Copy link">
+                      <span aria-hidden="true">⧉</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </article>
@@ -1202,6 +1225,18 @@ function onVideosPage() {
   feedKindSel?.addEventListener("change", render);
   feedTopBtn?.addEventListener("click", () => {
     feed?.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  feed?.addEventListener("click", async (e) => {
+    const btn = e.target?.closest?.("[data-copy-link]");
+    if (!btn) return;
+    const link = btn.getAttribute("data-copy-link") || "";
+    try {
+      await navigator.clipboard.writeText(link);
+      toast("Copied", "Video link copied.");
+    } catch {
+      toast("Copy failed", "Your browser blocked clipboard.");
+    }
   });
 
   render();

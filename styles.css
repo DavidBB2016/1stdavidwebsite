@@ -476,12 +476,6 @@ a:hover {
   border: 0;
 }
 
-.feed-meta {
-  padding: 14px;
-  display: grid;
-  gap: 10px;
-}
-
 .feed-title {
   font-weight: 900;
   letter-spacing: 0.1px;
@@ -492,10 +486,79 @@ a:hover {
   color: var(--muted);
 }
 
-.feed-actions {
+/* App-like overlay UI */
+.feed-ui {
+  position: absolute;
+  inset: 0;
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 35%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.feed-ui-top {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.source-badge {
+  pointer-events: none;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 12px;
+  font-weight: 820;
+  letter-spacing: 0.2px;
+}
+
+.feed-ui-bottom {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.feed-ui-left {
+  display: grid;
   gap: 10px;
-  flex-wrap: wrap;
+  max-width: 68%;
+}
+
+.feed-ui-right {
+  display: grid;
+  gap: 10px;
+}
+
+.icon-btn {
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.36);
+  border-color: rgba(255, 255, 255, 0.26);
+  text-decoration: none;
+}
+
+.icon-btn:focus {
+  outline: none;
+  box-shadow: var(--focus);
 }
 
 /* Comments */
