@@ -2506,9 +2506,10 @@ function onLiveGamesPage() {
   const nowEl = root.querySelector("[data-live-now]");
   const countEl = root.querySelector("[data-live-count]");
   const boardEl = root.querySelector("[data-live-board]");
+  const statusEl = root.querySelector("[data-live-status]");
   if (!boardEl) return;
 
-  let world = null; // { updated_at, fixtures: [] }
+  let world = null; // { updated_at, fixtures: [] } or { error, hint }
   let localFixtures = [];
 
   function pad2(n) {
@@ -2570,8 +2571,21 @@ function onLiveGamesPage() {
   async function fetchWorldLive() {
     try {
       const r = await fetch("/world/live", { cache: "no-store" });
-      if (!r.ok) return false;
-      const json = await r.json();
+      let json = null;
+      try {
+        json = await r.json();
+      } catch {
+        json = null;
+      }
+
+      if (!r.ok) {
+        world = {
+          error: (json && json.error) || `http_${r.status}`,
+          hint: (json && json.hint) || "World feed not available.",
+        };
+        return true;
+      }
+
       if (!json || json.ok !== true || !Array.isArray(json.fixtures)) return false;
       world = { updated_at: json.updated_at || "", fixtures: json.fixtures };
       return true;
@@ -2595,6 +2609,7 @@ function onLiveGamesPage() {
     const worldItems = world && Array.isArray(world.fixtures) ? world.fixtures : [];
     if (worldItems.length) {
       if (countEl) countEl.textContent = String(worldItems.length);
+      if (statusEl) statusEl.textContent = `World live: ON · Updated: ${String(world.updated_at || "just now")}`;
       const sorted = worldItems
         .slice()
         .sort((a, b) => (Number(b.elapsed) || 0) - (Number(a.elapsed) || 0))
@@ -2619,7 +2634,14 @@ function onLiveGamesPage() {
 
     if (world) {
       if (countEl) countEl.textContent = "0";
-      boardEl.innerHTML = `<div class="fs-empty">No live games worldwide right now.</div>`;
+      if (world.error && statusEl) {
+        statusEl.textContent = `World live: OFF · ${String(world.hint || world.error)}`;
+      } else if (statusEl) {
+        statusEl.textContent = "World live: ON · 0 live games right now";
+      }
+      boardEl.innerHTML = world.error
+        ? `<div class="fs-empty">${escapeText(String(world.hint || "World feed needs an API key."))}</div>`
+        : `<div class="fs-empty">No live games worldwide right now.</div>`;
       return;
     }
 
@@ -2633,10 +2655,12 @@ function onLiveGamesPage() {
 
     if (countEl) countEl.textContent = String(liveLocal.length);
     if (!liveLocal.length) {
+      if (statusEl) statusEl.textContent = "World live: OFF · Add RAPIDAPI_KEY then restart server.rb";
       boardEl.innerHTML = `<div class="fs-empty">No worldwide live games loaded. If you have an API key, run: RAPIDAPI_KEY=YOUR_KEY ruby server.rb</div>`;
       return;
     }
 
+    if (statusEl) statusEl.textContent = "World live: OFF · Showing local games only";
     boardEl.innerHTML = renderLeagueBlock(
       "Local",
       liveLocal
