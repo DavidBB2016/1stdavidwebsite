@@ -44,9 +44,9 @@
         <div class="page-head">
           <h1 data-i18n="h_live">Live games</h1>
           <p>
-            This page updates every second and shows which fixtures are LIVE
-            right now. Add your fixtures below. (To show live games from all
-            over the world, we would need a live-score API.)
+            A scoreboard style page that updates every second and shows which
+            fixtures are LIVE right now. Add fixtures below. (To show real live
+            games from all over the world, we would need a live-score API.)
           </p>
           <p class="mono">
             Now:
@@ -57,15 +57,32 @@
 
         <section class="panel">
           <div class="panel-body">
-            <h2 style="margin-top: 0">Live right now</h2>
-            <div class="list" data-live-list></div>
-          </div>
-        </section>
+            <div class="toolbar" style="margin-top: 0">
+              <div class="search">
+                <label class="sr-only" for="live-q">Search</label>
+                <input id="live-q" data-live-q placeholder="Search team or competition" />
+                <label class="sr-only" for="live-comp">Competition</label>
+                <select id="live-comp" data-live-comp aria-label="Competition filter">
+                  <option value="">All competitions</option>
+                </select>
+                <label class="sr-only" for="live-view">View</label>
+                <select id="live-view" data-live-view aria-label="View filter">
+                  <option value="all">All</option>
+                  <option value="live">Live</option>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="finished">Finished</option>
+                </select>
+              </div>
+              <div class="cta-row" style="margin: 0">
+                <button class="btn btn-ghost" type="button" data-live-clear>Clear all</button>
+              </div>
+            </div>
 
-        <section class="panel">
-          <div class="panel-body">
-            <h2 style="margin-top: 0">Upcoming and saved fixtures</h2>
-            <div class="list" data-live-saved-list></div>
+            <div class="fs-board" data-live-board></div>
+            <p class="fine" style="margin-top: 10px">
+              Tip: This list updates every second. Scores are optional and only
+              saved on your device.
+            </p>
           </div>
         </section>
 
@@ -83,6 +100,16 @@
                   <label>
                     Away team <span class="req">*</span>
                     <input name="away" required />
+                  </label>
+                </div>
+                <div class="grid-2">
+                  <label>
+                    Home score (optional)
+                    <input name="home_score" type="number" min="0" max="99" placeholder="0" />
+                  </label>
+                  <label>
+                    Away score (optional)
+                    <input name="away_score" type="number" min="0" max="99" placeholder="0" />
                   </label>
                 </div>
                 <div class="grid-2">
@@ -109,7 +136,6 @@
 
               <div class="form-actions">
                 <button class="btn btn-primary" type="submit">Save fixture</button>
-                <button class="btn btn-ghost" type="button" data-live-clear>Clear all</button>
               </div>
             </form>
             <p class="fine" style="margin-top: 12px">
@@ -130,4 +156,3 @@
     <script type="module" src="./app.js"></script>
   </body>
 </html>
-

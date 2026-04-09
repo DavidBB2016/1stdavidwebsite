@@ -2450,12 +2450,14 @@ function onLiveGamesPage() {
 
   const nowEl = root.querySelector("[data-live-now]");
   const countEl = root.querySelector("[data-live-count]");
-  const liveListEl = root.querySelector("[data-live-list]");
-  const savedListEl = root.querySelector("[data-live-saved-list]");
+  const boardEl = root.querySelector("[data-live-board]");
+  const qEl = root.querySelector("[data-live-q]");
+  const compEl = root.querySelector("[data-live-comp]");
+  const viewEl = root.querySelector("[data-live-view]");
   const form = root.querySelector("[data-live-form]");
   const clearBtn = root.querySelector("[data-live-clear]");
 
-  if (!liveListEl || !savedListEl || !form) return;
+  if (!boardEl || !form) return;
 
   let fixtures = readJson(STORAGE_KEYS.fixtures, []);
   if (!Array.isArray(fixtures)) fixtures = [];
@@ -2482,6 +2484,21 @@ function onLiveGamesPage() {
     return Number.isFinite(ms) ? ms : NaN;
   }
 
+  function norm(s) {
+    return String(s || "").trim().toLowerCase();
+  }
+
+  function fixtureCompetition(f) {
+    const comp = String(f.competition || "").trim();
+    return comp || "Friendly";
+  }
+
+  function matchesQueryFixture(f, q) {
+    const nq = norm(q);
+    if (!nq) return true;
+    return [f.home, f.away, f.competition, f.venue].some((v) => norm(v).includes(nq));
+  }
+
   function statusForFixture(f, nowMs) {
     const kickoffMs = safeDateMs(f.kickoff_iso);
     const durationMins = Number(f.duration_mins || 90) || 90;
@@ -2494,48 +2511,83 @@ function onLiveGamesPage() {
     return { kind: "finished", kickoffMs, endMs, durationMs };
   }
 
-  function renderFixtureItem(f, nowMs) {
-    const st = statusForFixture(f, nowMs);
-    const title = `${f.home || "Home"} vs ${f.away || "Away"}`;
-
-    let badge = `<span class="source-badge">SAVED</span>`;
-    let meta = "";
+  function displayTimeForFixture(f, st, nowMs) {
     if (st.kind === "live") {
-      badge = `<span class="source-badge">LIVE</span>`;
-      meta = `Elapsed: ${formatHms(nowMs - st.kickoffMs)} · Left: ${formatHms(st.endMs - nowMs)}`;
-    } else if (st.kind === "upcoming") {
-      badge = `<span class="source-badge">UPCOMING</span>`;
-      meta = `Starts in: ${formatHms(st.kickoffMs - nowMs)}`;
-    } else if (st.kind === "finished") {
-      badge = `<span class="source-badge">FINISHED</span>`;
-      meta = `Ended ${formatHms(nowMs - st.endMs)} ago`;
-    } else {
-      badge = `<span class="source-badge">INVALID TIME</span>`;
-      meta = "Fix the kickoff time and save again.";
+      const mins = Math.max(1, Math.floor((nowMs - st.kickoffMs) / 60000) + 1);
+      return `${mins}'`;
     }
+    if (st.kind === "finished") return "FT";
+    if (st.kind === "invalid") return "--";
+    try {
+      const d = new Date(f.kickoff_iso);
+      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return "--";
+    }
+  }
 
-    const details = [
-      f.competition ? `Competition: ${escapeText(String(f.competition))}` : "",
-      f.venue ? `Venue: ${escapeText(String(f.venue))}` : "",
-      f.kickoff_iso ? `Kickoff: ${escapeText(new Date(f.kickoff_iso).toLocaleString())}` : "",
-      f.duration_mins ? `Length: ${escapeText(String(f.duration_mins))} mins` : "",
-    ]
-      .filter(Boolean)
-      .join(" · ");
+  function displayMetaForFixture(f, st, nowMs) {
+    if (st.kind === "live") return `Left ${formatHms(st.endMs - nowMs)}`;
+    if (st.kind === "upcoming") return `Starts in ${formatHms(st.kickoffMs - nowMs)}`;
+    if (st.kind === "finished") return `Ended ${formatHms(nowMs - st.endMs)} ago`;
+    return "Fix kickoff time";
+  }
+
+  function displayScoreForFixture(f) {
+    const hs = Number(f.home_score);
+    const as = Number(f.away_score);
+    if (Number.isFinite(hs) && Number.isFinite(as)) return `${hs}-${as}`;
+    return "-";
+  }
+
+  function renderRow(f, nowMs) {
+    const st = statusForFixture(f, nowMs);
+    const time = displayTimeForFixture(f, st, nowMs);
+    const meta = displayMetaForFixture(f, st, nowMs);
+    const comp = fixtureCompetition(f);
+    const score = displayScoreForFixture(f);
+    const timeClass = st.kind === "live" ? "fs-time fs-time-live" : "fs-time";
+    const rowClass =
+      st.kind === "live" ? "fs-row fs-row-live" : st.kind === "upcoming" ? "fs-row fs-row-upcoming" : "fs-row";
 
     return `
-      <article class="item">
-        <div class="item-head">
-          <h3 class="item-title">${escapeText(title)}</h3>
-          <div class="item-meta">${badge}</div>
+      <div class="${rowClass}" data-live-id="${escapeText(f.id)}">
+        <div class="${timeClass}">
+          <div class="fs-time-main">${escapeText(time)}</div>
+          <div class="fs-time-sub">${escapeText(meta)}</div>
         </div>
-        <p class="small">${escapeText(meta)}</p>
-        ${details ? `<p class="small muted">${details}</p>` : ""}
-        <div class="cta-row" style="margin: 0">
-          <button class="btn btn-ghost" type="button" data-live-delete="${escapeText(f.id)}">Delete</button>
+        <div class="fs-teams">
+          <div class="fs-team fs-team-home">${escapeText(f.home || "Home")}</div>
+          <div class="fs-team fs-team-away">${escapeText(f.away || "Away")}</div>
         </div>
-      </article>
+        <div class="fs-score">${escapeText(score)}</div>
+        <button class="fs-del" type="button" aria-label="Delete fixture" title="Delete" data-live-delete="${escapeText(
+          f.id
+        )}">×</button>
+      </div>
     `;
+  }
+
+  function renderLeagueBlock(name, rowsHtml) {
+    return `
+      <div class="fs-league">
+        <div class="fs-league-name">${escapeText(name)}</div>
+      </div>
+      ${rowsHtml}
+    `;
+  }
+
+  function syncCompetitionOptions() {
+    if (!compEl) return;
+    const current = compEl.value || "";
+    const comps = Array.from(new Set(fixtures.map((f) => fixtureCompetition(f))))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+    const opts = [`<option value="">All competitions</option>`]
+      .concat(comps.map((c) => `<option value="${escapeText(c)}">${escapeText(c)}</option>`))
+      .join("");
+    compEl.innerHTML = opts;
+    compEl.value = comps.includes(current) ? current : "";
   }
 
   function render() {
@@ -2545,33 +2597,64 @@ function onLiveGamesPage() {
       nowEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
     }
 
-    const live = fixtures.filter((f) => statusForFixture(f, nowMs).kind === "live");
-    const rest = fixtures.filter((f) => statusForFixture(f, nowMs).kind !== "live");
+    const liveTotal = fixtures.filter((f) => statusForFixture(f, nowMs).kind === "live").length;
+    if (countEl) countEl.textContent = String(liveTotal);
 
-    if (countEl) countEl.textContent = String(live.length);
+    const q = qEl?.value?.trim() || "";
+    const comp = compEl?.value || "";
+    const view = viewEl?.value || "all";
 
-    if (!live.length) {
-      liveListEl.innerHTML = `<p class="muted">No live games right now. Add fixtures below.</p>`;
-    } else {
-      liveListEl.innerHTML = live.map((f) => renderFixtureItem(f, nowMs)).join("");
-    }
-
-    if (!rest.length) {
-      savedListEl.innerHTML = `<p class="muted">No upcoming fixtures saved yet.</p>`;
-    } else {
-      // Show upcoming first, then finished/invalid.
-      const order = (f) => {
+    const filtered = fixtures
+      .filter((f) => matchesQueryFixture(f, q))
+      .filter((f) => (comp ? fixtureCompetition(f) === comp : true))
+      .filter((f) => {
         const st = statusForFixture(f, nowMs);
-        if (st.kind === "upcoming") return 0;
-        if (st.kind === "finished") return 1;
-        return 2;
-      };
-      savedListEl.innerHTML = rest
-        .slice()
-        .sort((a, b) => order(a) - order(b))
-        .map((f) => renderFixtureItem(f, nowMs))
-        .join("");
+        if (view === "live") return st.kind === "live";
+        if (view === "upcoming") return st.kind === "upcoming";
+        if (view === "finished") return st.kind === "finished";
+        return true;
+      });
+
+    if (!filtered.length) {
+      boardEl.innerHTML = `<div class="fs-empty">No fixtures yet. Add one below.</div>`;
+      return;
     }
+
+    // Sort like a live scoreboard: LIVE first, then upcoming, then finished/invalid.
+    const rank = (f) => {
+      const st = statusForFixture(f, nowMs);
+      if (st.kind === "live") return 0;
+      if (st.kind === "upcoming") return 1;
+      if (st.kind === "finished") return 2;
+      return 3;
+    };
+    const sorted = filtered
+      .slice()
+      .sort((a, b) => {
+        const ra = rank(a);
+        const rb = rank(b);
+        if (ra !== rb) return ra - rb;
+        const sa = statusForFixture(a, nowMs);
+        const sb = statusForFixture(b, nowMs);
+        const ka = sa.kickoffMs || safeDateMs(a.kickoff_iso) || 0;
+        const kb = sb.kickoffMs || safeDateMs(b.kickoff_iso) || 0;
+        return ka - kb;
+      });
+
+    const byLeague = new Map();
+    for (const f of sorted) {
+      const league = fixtureCompetition(f);
+      if (!byLeague.has(league)) byLeague.set(league, []);
+      byLeague.get(league).push(f);
+    }
+
+    const leagueNames = Array.from(byLeague.keys()).sort((a, b) => a.localeCompare(b));
+    boardEl.innerHTML = leagueNames
+      .map((name) => {
+        const rows = byLeague.get(name).map((f) => renderRow(f, nowMs)).join("");
+        return renderLeagueBlock(name, rows);
+      })
+      .join("");
   }
 
   form.addEventListener("submit", (e) => {
@@ -2579,6 +2662,8 @@ function onLiveGamesPage() {
     const fd = new FormData(form);
     const home = String(fd.get("home") || "").trim();
     const away = String(fd.get("away") || "").trim();
+    const homeScoreRaw = String(fd.get("home_score") || "").trim();
+    const awayScoreRaw = String(fd.get("away_score") || "").trim();
     const kickoffLocal = String(fd.get("kickoff") || "").trim();
     const duration = Number(String(fd.get("duration") || "90").trim());
     const competition = String(fd.get("competition") || "").trim();
@@ -2600,6 +2685,16 @@ function onLiveGamesPage() {
       return;
     }
 
+    const homeScore = homeScoreRaw === "" ? null : Number(homeScoreRaw);
+    const awayScore = awayScoreRaw === "" ? null : Number(awayScoreRaw);
+    if (
+      (homeScoreRaw !== "" && (!Number.isFinite(homeScore) || homeScore < 0 || homeScore > 99)) ||
+      (awayScoreRaw !== "" && (!Number.isFinite(awayScore) || awayScore < 0 || awayScore > 99))
+    ) {
+      toast("Invalid score", "Scores must be a number between 0 and 99 (or left blank).");
+      return;
+    }
+
     const fixture = {
       id: uid("fx"),
       created_at: nowIso(),
@@ -2609,10 +2704,13 @@ function onLiveGamesPage() {
       duration_mins: duration,
       competition,
       venue,
+      home_score: homeScore,
+      away_score: awayScore,
     };
 
     fixtures.unshift(fixture);
     save();
+    syncCompetitionOptions();
     form.reset();
     const durEl = form.querySelector("input[name=duration]");
     if (durEl) durEl.value = "90";
@@ -2624,6 +2722,7 @@ function onLiveGamesPage() {
     if (!fixtures.length) return;
     fixtures = [];
     save();
+    syncCompetitionOptions();
     toast("Cleared", "All fixtures removed from this device.");
     render();
   });
@@ -2636,12 +2735,17 @@ function onLiveGamesPage() {
     fixtures = fixtures.filter((f) => f.id !== id);
     if (fixtures.length !== before) {
       save();
+      syncCompetitionOptions();
       render();
     }
   }
-  liveListEl.addEventListener("click", handleDeleteClick);
-  savedListEl.addEventListener("click", handleDeleteClick);
+  boardEl.addEventListener("click", handleDeleteClick);
 
+  qEl?.addEventListener("input", render);
+  compEl?.addEventListener("change", render);
+  viewEl?.addEventListener("change", render);
+
+  syncCompetitionOptions();
   render();
   window.setInterval(render, 1000);
 }
