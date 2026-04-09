@@ -78,6 +78,14 @@
       </div>
     </footer>
 
-    <script type="module" src="./app.js"></script>
+    <script type="module">
+      const status = document.querySelector("[data-live-status]");
+      if (status) status.textContent = "Loading app…";
+      import("./app.js").catch((e) => {
+        console.error(e);
+        if (status) status.textContent = "Error loading app.js. Open DevTools Console for details.";
+      });
+    </script>
+    <script nomodule src="./app.js"></script>
   </body>
 </html>
