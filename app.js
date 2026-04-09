@@ -2270,6 +2270,49 @@ function onMatchRequestPage() {
     addRequest(record);
     form.reset();
     toast("Request posted", "Your match request is now visible in Browse.");
+
+    // If kickoff time is provided, also add it to the Live Games leaderboard.
+    const kickoffLocal = String(record.kickoff_datetime || "").trim();
+    if (kickoffLocal) {
+      const kickoffMs = new Date(kickoffLocal).getTime();
+      if (Number.isFinite(kickoffMs)) {
+        const fixture = {
+          id: uid("fx"),
+          created_at: nowIso(),
+          home: record.team_name || "Home",
+          away: String(record.opponent_team || "").trim() || "Opponent",
+          kickoff_iso: new Date(kickoffMs).toISOString(),
+          duration_mins: Number(record.match_length || 90) || 90,
+          competition: record.request_type || "",
+          venue: [record.town_city || "", record.country || ""].filter(Boolean).join(", "),
+          home_score: null,
+          away_score: null,
+        };
+
+        // Local fallback (works even without the Wi‑Fi server).
+        const local = readJson(STORAGE_KEYS.fixtures, []);
+        const list = Array.isArray(local) ? local : [];
+        list.unshift(fixture);
+        writeJson(STORAGE_KEYS.fixtures, list.slice(0, 200));
+
+        // Shared on Wi‑Fi server (if running).
+        fetch("/fixtures/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sid: getDeviceId(),
+            home: fixture.home,
+            away: fixture.away,
+            kickoff_iso: fixture.kickoff_iso,
+            duration_mins: fixture.duration_mins,
+            competition: fixture.competition,
+            venue: fixture.venue,
+            home_score: fixture.home_score,
+            away_score: fixture.away_score,
+          }),
+        }).catch(() => {});
+      }
+    }
   });
 }
 
@@ -2451,20 +2494,10 @@ function onLiveGamesPage() {
   const nowEl = root.querySelector("[data-live-now]");
   const countEl = root.querySelector("[data-live-count]");
   const boardEl = root.querySelector("[data-live-board]");
-  const qEl = root.querySelector("[data-live-q]");
-  const compEl = root.querySelector("[data-live-comp]");
-  const viewEl = root.querySelector("[data-live-view]");
-  const form = root.querySelector("[data-live-form]");
-  const clearBtn = root.querySelector("[data-live-clear]");
+  if (!boardEl) return;
 
-  if (!boardEl || !form) return;
-
-  let fixtures = readJson(STORAGE_KEYS.fixtures, []);
-  if (!Array.isArray(fixtures)) fixtures = [];
-
-  function save() {
-    writeJson(STORAGE_KEYS.fixtures, fixtures);
-  }
+  let fixtures = [];
+  let source = "local";
 
   function pad2(n) {
     return String(n).padStart(2, "0");
@@ -2484,19 +2517,9 @@ function onLiveGamesPage() {
     return Number.isFinite(ms) ? ms : NaN;
   }
 
-  function norm(s) {
-    return String(s || "").trim().toLowerCase();
-  }
-
   function fixtureCompetition(f) {
     const comp = String(f.competition || "").trim();
     return comp || "Friendly";
-  }
-
-  function matchesQueryFixture(f, q) {
-    const nq = norm(q);
-    if (!nq) return true;
-    return [f.home, f.away, f.competition, f.venue].some((v) => norm(v).includes(nq));
   }
 
   function statusForFixture(f, nowMs) {
@@ -2544,14 +2567,12 @@ function onLiveGamesPage() {
     const st = statusForFixture(f, nowMs);
     const time = displayTimeForFixture(f, st, nowMs);
     const meta = displayMetaForFixture(f, st, nowMs);
-    const comp = fixtureCompetition(f);
     const score = displayScoreForFixture(f);
     const timeClass = st.kind === "live" ? "fs-time fs-time-live" : "fs-time";
-    const rowClass =
-      st.kind === "live" ? "fs-row fs-row-live" : st.kind === "upcoming" ? "fs-row fs-row-upcoming" : "fs-row";
+    const rowClass = st.kind === "live" ? "fs-row fs-row-live" : "fs-row";
 
     return `
-      <div class="${rowClass}" data-live-id="${escapeText(f.id)}">
+      <div class="${rowClass}">
         <div class="${timeClass}">
           <div class="fs-time-main">${escapeText(time)}</div>
           <div class="fs-time-sub">${escapeText(meta)}</div>
@@ -2561,9 +2582,6 @@ function onLiveGamesPage() {
           <div class="fs-team fs-team-away">${escapeText(f.away || "Away")}</div>
         </div>
         <div class="fs-score">${escapeText(score)}</div>
-        <button class="fs-del" type="button" aria-label="Delete fixture" title="Delete" data-live-delete="${escapeText(
-          f.id
-        )}">×</button>
       </div>
     `;
   }
@@ -2577,17 +2595,24 @@ function onLiveGamesPage() {
     `;
   }
 
-  function syncCompetitionOptions() {
-    if (!compEl) return;
-    const current = compEl.value || "";
-    const comps = Array.from(new Set(fixtures.map((f) => fixtureCompetition(f))))
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b));
-    const opts = [`<option value="">All competitions</option>`]
-      .concat(comps.map((c) => `<option value="${escapeText(c)}">${escapeText(c)}</option>`))
-      .join("");
-    compEl.innerHTML = opts;
-    compEl.value = comps.includes(current) ? current : "";
+  async function fetchFixturesFromServer() {
+    try {
+      const r = await fetch("/fixtures", { cache: "no-store" });
+      if (!r.ok) return false;
+      const json = await r.json();
+      if (!json || json.ok !== true || !Array.isArray(json.fixtures)) return false;
+      fixtures = json.fixtures;
+      source = "server";
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function loadFixturesLocal() {
+    const local = readJson(STORAGE_KEYS.fixtures, []);
+    fixtures = Array.isArray(local) ? local : [];
+    source = "local";
   }
 
   function render() {
@@ -2597,49 +2622,26 @@ function onLiveGamesPage() {
       nowEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
     }
 
-    const liveTotal = fixtures.filter((f) => statusForFixture(f, nowMs).kind === "live").length;
-    if (countEl) countEl.textContent = String(liveTotal);
+    const liveOnly = fixtures.filter((f) => statusForFixture(f, nowMs).kind === "live");
+    if (countEl) countEl.textContent = String(liveOnly.length);
 
-    const q = qEl?.value?.trim() || "";
-    const comp = compEl?.value || "";
-    const view = viewEl?.value || "all";
-
-    const filtered = fixtures
-      .filter((f) => matchesQueryFixture(f, q))
-      .filter((f) => (comp ? fixtureCompetition(f) === comp : true))
-      .filter((f) => {
-        const st = statusForFixture(f, nowMs);
-        if (view === "live") return st.kind === "live";
-        if (view === "upcoming") return st.kind === "upcoming";
-        if (view === "finished") return st.kind === "finished";
-        return true;
-      });
-
-    if (!filtered.length) {
-      boardEl.innerHTML = `<div class="fs-empty">No fixtures yet. Add one below.</div>`;
+    if (!liveOnly.length) {
+      const hint =
+        source === "server"
+          ? "No live games right now. Post one from Match Request."
+          : "No live games right now. Run ruby server.rb for shared games on Wi‑Fi.";
+      boardEl.innerHTML = `<div class="fs-empty">${escapeText(hint)}</div>`;
       return;
     }
 
-    // Sort like a live scoreboard: LIVE first, then upcoming, then finished/invalid.
-    const rank = (f) => {
-      const st = statusForFixture(f, nowMs);
-      if (st.kind === "live") return 0;
-      if (st.kind === "upcoming") return 1;
-      if (st.kind === "finished") return 2;
-      return 3;
-    };
-    const sorted = filtered
-      .slice()
-      .sort((a, b) => {
-        const ra = rank(a);
-        const rb = rank(b);
-        if (ra !== rb) return ra - rb;
-        const sa = statusForFixture(a, nowMs);
-        const sb = statusForFixture(b, nowMs);
-        const ka = sa.kickoffMs || safeDateMs(a.kickoff_iso) || 0;
-        const kb = sb.kickoffMs || safeDateMs(b.kickoff_iso) || 0;
-        return ka - kb;
-      });
+    // Leaderboard: most-advanced games (highest minute) first.
+    const sorted = liveOnly.slice().sort((a, b) => {
+      const sa = statusForFixture(a, nowMs);
+      const sb = statusForFixture(b, nowMs);
+      const ma = sa.kind === "live" ? nowMs - sa.kickoffMs : -1;
+      const mb = sb.kind === "live" ? nowMs - sb.kickoffMs : -1;
+      return mb - ma;
+    });
 
     const byLeague = new Map();
     for (const f of sorted) {
@@ -2657,97 +2659,14 @@ function onLiveGamesPage() {
       .join("");
   }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    const home = String(fd.get("home") || "").trim();
-    const away = String(fd.get("away") || "").trim();
-    const homeScoreRaw = String(fd.get("home_score") || "").trim();
-    const awayScoreRaw = String(fd.get("away_score") || "").trim();
-    const kickoffLocal = String(fd.get("kickoff") || "").trim();
-    const duration = Number(String(fd.get("duration") || "90").trim());
-    const competition = String(fd.get("competition") || "").trim();
-    const venue = String(fd.get("venue") || "").trim();
-
-    if (!home || !away || !kickoffLocal) {
-      toast("Missing details", "Home, away, and kickoff time are required.");
-      return;
-    }
-    if (!Number.isFinite(duration) || duration < 10 || duration > 240) {
-      toast("Invalid match length", "Please choose a match length between 10 and 240 minutes.");
-      return;
-    }
-
-    // datetime-local returns local time without timezone, but Date(...) interprets it as local time.
-    const kickoffMs = safeDateMs(kickoffLocal);
-    if (!Number.isFinite(kickoffMs)) {
-      toast("Invalid kickoff", "Please choose a valid kickoff date/time.");
-      return;
-    }
-
-    const homeScore = homeScoreRaw === "" ? null : Number(homeScoreRaw);
-    const awayScore = awayScoreRaw === "" ? null : Number(awayScoreRaw);
-    if (
-      (homeScoreRaw !== "" && (!Number.isFinite(homeScore) || homeScore < 0 || homeScore > 99)) ||
-      (awayScoreRaw !== "" && (!Number.isFinite(awayScore) || awayScore < 0 || awayScore > 99))
-    ) {
-      toast("Invalid score", "Scores must be a number between 0 and 99 (or left blank).");
-      return;
-    }
-
-    const fixture = {
-      id: uid("fx"),
-      created_at: nowIso(),
-      home,
-      away,
-      kickoff_iso: new Date(kickoffMs).toISOString(),
-      duration_mins: duration,
-      competition,
-      venue,
-      home_score: homeScore,
-      away_score: awayScore,
-    };
-
-    fixtures.unshift(fixture);
-    save();
-    syncCompetitionOptions();
-    form.reset();
-    const durEl = form.querySelector("input[name=duration]");
-    if (durEl) durEl.value = "90";
-    toast("Saved", "Fixture saved. This list updates every second.");
+  // Initial load tries the server first, then local fallback.
+  fetchFixturesFromServer().then((ok) => {
+    if (!ok) loadFixturesLocal();
     render();
   });
 
-  clearBtn?.addEventListener("click", () => {
-    if (!fixtures.length) return;
-    fixtures = [];
-    save();
-    syncCompetitionOptions();
-    toast("Cleared", "All fixtures removed from this device.");
-    render();
-  });
-
-  function handleDeleteClick(e) {
-    const btn = e.target && e.target.closest ? e.target.closest("[data-live-delete]") : null;
-    if (!btn) return;
-    const id = btn.getAttribute("data-live-delete") || "";
-    const before = fixtures.length;
-    fixtures = fixtures.filter((f) => f.id !== id);
-    if (fixtures.length !== before) {
-      save();
-      syncCompetitionOptions();
-      render();
-    }
-  }
-  boardEl.addEventListener("click", handleDeleteClick);
-
-  qEl?.addEventListener("input", render);
-  compEl?.addEventListener("change", render);
-  viewEl?.addEventListener("change", render);
-
-  syncCompetitionOptions();
-  render();
   window.setInterval(render, 1000);
+  window.setInterval(() => fetchFixturesFromServer().then((ok) => ok && render()), 5000);
 }
 
 setActiveNav();

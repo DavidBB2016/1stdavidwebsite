@@ -21,9 +21,11 @@ likes_lock = Mutex.new
 
 DATA_DIR = File.join(ROOT, "data")
 COMMENTS_FILE = File.join(DATA_DIR, "comments.json")
+FIXTURES_FILE = File.join(DATA_DIR, "fixtures.json")
 FileUtils.mkdir_p(DATA_DIR)
 
 comments_lock = Mutex.new
+fixtures_lock = Mutex.new
 
 def load_comments(path)
   return [] unless File.exist?(path)
@@ -38,6 +40,30 @@ def save_comments(path, comments)
   tmp = "#{path}.tmp"
   File.write(tmp, JSON.pretty_generate(comments))
   File.rename(tmp, path)
+end
+
+def load_fixtures(path)
+  return [] unless File.exist?(path)
+  raw = File.read(path)
+  parsed = JSON.parse(raw)
+  parsed.is_a?(Array) ? parsed : []
+rescue
+  []
+end
+
+def save_fixtures(path, fixtures)
+  tmp = "#{path}.tmp"
+  File.write(tmp, JSON.pretty_generate(fixtures))
+  File.rename(tmp, path)
+end
+
+def prune_old_fixtures!(fixtures, now_utc)
+  # Keep recent fixtures only (2 days). This keeps the file small.
+  cutoff = now_utc - (2 * 24 * 60 * 60)
+  fixtures.select! do |f|
+    t = Time.parse(f["kickoff_iso"].to_s) rescue nil
+    t && t >= cutoff
+  end
 end
 
 def prune_presence!(presence, now, stale_seconds)
@@ -220,6 +246,95 @@ server.mount_proc("/comments/add-form") do |req, res|
 
   res.status = 303
   res["Location"] = "/comments.html#posted"
+end
+
+server.mount_proc("/fixtures") do |_req, res|
+  items = []
+  fixtures_lock.synchronize do
+    items = load_fixtures(FIXTURES_FILE)
+  end
+  res["Cache-Control"] = "no-store"
+  res["Content-Type"] = "application/json"
+  res.body = JSON.dump({ ok: true, fixtures: items })
+end
+
+server.mount_proc("/fixtures/add") do |req, res|
+  if req.request_method != "POST"
+    res.status = 405
+    res["Content-Type"] = "application/json"
+    res.body = JSON.dump({ ok: false, error: "method not allowed" })
+    next
+  end
+
+  begin
+    data = JSON.parse(req.body.to_s)
+  rescue
+    res.status = 400
+    res["Content-Type"] = "application/json"
+    res.body = JSON.dump({ ok: false, error: "invalid json" })
+    next
+  end
+
+  sid = data["sid"].to_s.strip
+  home = data["home"].to_s.strip
+  away = data["away"].to_s.strip
+  kickoff_iso = data["kickoff_iso"].to_s.strip
+  duration_mins = Integer(data["duration_mins"] || 90) rescue 90
+  competition = data["competition"].to_s.strip
+  venue = data["venue"].to_s.strip
+  home_score = data.key?("home_score") ? data["home_score"] : nil
+  away_score = data.key?("away_score") ? data["away_score"] : nil
+
+  if sid.empty? || home.empty? || away.empty? || kickoff_iso.empty?
+    res.status = 400
+    res["Content-Type"] = "application/json"
+    res.body = JSON.dump({ ok: false, error: "missing fields" })
+    next
+  end
+
+  begin
+    Time.iso8601(kickoff_iso)
+  rescue
+    res.status = 400
+    res["Content-Type"] = "application/json"
+    res.body = JSON.dump({ ok: false, error: "invalid kickoff_iso" })
+    next
+  end
+
+  if duration_mins < 10 || duration_mins > 240
+    res.status = 400
+    res["Content-Type"] = "application/json"
+    res.body = JSON.dump({ ok: false, error: "invalid duration_mins" })
+    next
+  end
+
+  now = Time.now.utc
+  item = {
+    "id" => "fx_#{now.to_i}_#{rand(1_000_000)}",
+    "created_at" => now.iso8601,
+    "sid" => sid,
+    "home" => home[0, 60],
+    "away" => away[0, 60],
+    "kickoff_iso" => kickoff_iso,
+    "duration_mins" => duration_mins,
+    "competition" => competition[0, 80],
+    "venue" => venue[0, 80],
+    "home_score" => home_score,
+    "away_score" => away_score,
+  }
+
+  items = []
+  fixtures_lock.synchronize do
+    items = load_fixtures(FIXTURES_FILE)
+    items.unshift(item)
+    prune_old_fixtures!(items, now)
+    items = items.take(500)
+    save_fixtures(FIXTURES_FILE, items)
+  end
+
+  res["Cache-Control"] = "no-store"
+  res["Content-Type"] = "application/json"
+  res.body = JSON.dump({ ok: true, fixtures: items.take(200) })
 end
 
 server.mount_proc("/health") do |_req, res|

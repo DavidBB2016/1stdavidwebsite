@@ -44,103 +44,23 @@
         <div class="page-head">
           <h1 data-i18n="h_live">Live games</h1>
           <p>
-            A scoreboard style page that updates every second and shows which
-            fixtures are LIVE right now. Add fixtures below. (To show real live
-            games from all over the world, we would need a live-score API.)
+            Live Games Leaderboard. This updates every second and shows which
+            games are happening right now.
           </p>
           <p class="mono">
             Now:
             <span data-live-now>--:--:--</span> · Live right now:
             <span data-live-count>0</span>
           </p>
+          <p class="fine">
+            Tip: To add a game, post it from <a href="./match-request.html">Match Request</a>.
+            If you are running <span class="mono">ruby server.rb</span> on Wi‑Fi, everyone shares the same list.
+          </p>
         </div>
 
         <section class="panel">
           <div class="panel-body">
-            <div class="toolbar" style="margin-top: 0">
-              <div class="search">
-                <label class="sr-only" for="live-q">Search</label>
-                <input id="live-q" data-live-q placeholder="Search team or competition" />
-                <label class="sr-only" for="live-comp">Competition</label>
-                <select id="live-comp" data-live-comp aria-label="Competition filter">
-                  <option value="">All competitions</option>
-                </select>
-                <label class="sr-only" for="live-view">View</label>
-                <select id="live-view" data-live-view aria-label="View filter">
-                  <option value="all">All</option>
-                  <option value="live">Live</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="finished">Finished</option>
-                </select>
-              </div>
-              <div class="cta-row" style="margin: 0">
-                <button class="btn btn-ghost" type="button" data-live-clear>Clear all</button>
-              </div>
-            </div>
-
             <div class="fs-board" data-live-board></div>
-            <p class="fine" style="margin-top: 10px">
-              Tip: This list updates every second. Scores are optional and only
-              saved on your device.
-            </p>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-body">
-            <h2 style="margin-top: 0">Add a fixture</h2>
-            <form class="form" data-live-form>
-              <fieldset class="fieldset">
-                <legend>Fixture</legend>
-                <div class="grid-2">
-                  <label>
-                    Home team <span class="req">*</span>
-                    <input name="home" required />
-                  </label>
-                  <label>
-                    Away team <span class="req">*</span>
-                    <input name="away" required />
-                  </label>
-                </div>
-                <div class="grid-2">
-                  <label>
-                    Home score (optional)
-                    <input name="home_score" type="number" min="0" max="99" placeholder="0" />
-                  </label>
-                  <label>
-                    Away score (optional)
-                    <input name="away_score" type="number" min="0" max="99" placeholder="0" />
-                  </label>
-                </div>
-                <div class="grid-2">
-                  <label>
-                    Kickoff (local time) <span class="req">*</span>
-                    <input name="kickoff" type="datetime-local" required />
-                  </label>
-                  <label>
-                    Match length (minutes) <span class="req">*</span>
-                    <input name="duration" type="number" min="10" max="240" value="90" required />
-                  </label>
-                </div>
-                <div class="grid-2">
-                  <label>
-                    Competition (optional)
-                    <input name="competition" placeholder="Example: School league" />
-                  </label>
-                  <label>
-                    Venue (optional)
-                    <input name="venue" placeholder="Example: Eastbourne" />
-                  </label>
-                </div>
-              </fieldset>
-
-              <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Save fixture</button>
-              </div>
-            </form>
-            <p class="fine" style="margin-top: 12px">
-              Tip: This is saved on your device using localStorage.
-            </p>
           </div>
         </section>
       </div>
