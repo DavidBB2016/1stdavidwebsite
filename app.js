@@ -2276,6 +2276,18 @@ function onMatchRequestPage() {
     if (kickoffLocal) {
       const kickoffMs = new Date(kickoffLocal).getTime();
       if (Number.isFinite(kickoffMs)) {
+        const homeScoreRaw = String(record.home_score || "").trim();
+        const awayScoreRaw = String(record.away_score || "").trim();
+        const homeScore = homeScoreRaw === "" ? null : Number(homeScoreRaw);
+        const awayScore = awayScoreRaw === "" ? null : Number(awayScoreRaw);
+        if (
+          (homeScoreRaw !== "" && (!Number.isFinite(homeScore) || homeScore < 0 || homeScore > 99)) ||
+          (awayScoreRaw !== "" && (!Number.isFinite(awayScore) || awayScore < 0 || awayScore > 99))
+        ) {
+          toast("Invalid score", "Scores must be a number between 0 and 99 (or left blank).");
+          return;
+        }
+
         const fixture = {
           id: uid("fx"),
           created_at: nowIso(),
@@ -2285,8 +2297,8 @@ function onMatchRequestPage() {
           duration_mins: Number(record.match_length || 90) || 90,
           competition: record.request_type || "",
           venue: [record.town_city || "", record.country || ""].filter(Boolean).join(", "),
-          home_score: null,
-          away_score: null,
+          home_score: homeScore,
+          away_score: awayScore,
         };
 
         // Local fallback (works even without the Wi‑Fi server).
@@ -2550,10 +2562,8 @@ function onLiveGamesPage() {
   }
 
   function displayMetaForFixture(f, st, nowMs) {
-    if (st.kind === "live") return `Left ${formatHms(st.endMs - nowMs)}`;
-    if (st.kind === "upcoming") return `Starts in ${formatHms(st.kickoffMs - nowMs)}`;
-    if (st.kind === "finished") return `Ended ${formatHms(nowMs - st.endMs)} ago`;
-    return "Fix kickoff time";
+    // Keep the leaderboard focused on score, not countdowns.
+    return "";
   }
 
   function displayScoreForFixture(f) {
@@ -2575,7 +2585,7 @@ function onLiveGamesPage() {
       <div class="${rowClass}">
         <div class="${timeClass}">
           <div class="fs-time-main">${escapeText(time)}</div>
-          <div class="fs-time-sub">${escapeText(meta)}</div>
+          ${meta ? `<div class="fs-time-sub">${escapeText(meta)}</div>` : ""}
         </div>
         <div class="fs-teams">
           <div class="fs-team fs-team-home">${escapeText(f.home || "Home")}</div>
