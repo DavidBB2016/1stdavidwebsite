@@ -381,6 +381,24 @@ def fetch_api_football_live(rapid_key:, rapid_host:, timezone:)
   end
 end
 
+server.mount_proc("/world/status") do |_req, res|
+  rapid_key = ENV["RAPIDAPI_KEY"].to_s.strip
+  rapid_host = ENV.fetch("RAPIDAPI_HOST", "api-football-v1.p.rapidapi.com").to_s.strip
+  timezone = ENV.fetch("API_FOOTBALL_TIMEZONE", "Europe/London").to_s.strip
+  ttl = Integer(ENV.fetch("API_FOOTBALL_CACHE_SECONDS", "12")) rescue 12
+
+  res["Cache-Control"] = "no-store"
+  res["Content-Type"] = "application/json"
+  res.body = JSON.dump({
+    ok: true,
+    rapidapi_key_present: !rapid_key.empty?,
+    rapidapi_host: rapid_host,
+    timezone: timezone,
+    cache_seconds: ttl,
+    server_time_utc: Time.now.utc.iso8601,
+  })
+end
+
 server.mount_proc("/world/live") do |_req, res|
   rapid_key = ENV["RAPIDAPI_KEY"].to_s.strip
   rapid_host = ENV.fetch("RAPIDAPI_HOST", "api-football-v1.p.rapidapi.com").to_s.strip
