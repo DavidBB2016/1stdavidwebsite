@@ -6,6 +6,8 @@ require "json"
 require "webrick"
 require "fileutils"
 require "time"
+require "net/http"
+require "uri"
 
 ROOT = Dir.pwd
 BIND = ENV.fetch("BIND", "0.0.0.0")
@@ -335,6 +337,121 @@ server.mount_proc("/fixtures/add") do |req, res|
   res["Cache-Control"] = "no-store"
   res["Content-Type"] = "application/json"
   res.body = JSON.dump({ ok: true, fixtures: items.take(200) })
+end
+
+rapidapi_cache = { at: 0, body: nil, error: nil }
+rapidapi_lock = Mutex.new
+
+def fetch_api_football_live(rapid_key:, rapid_host:, timezone:)
+  base = "https://#{rapid_host}/v3/fixtures"
+  uri = URI(base)
+  uri.query = URI.encode_www_form({ live: "all", timezone: timezone })
+
+  req = Net::HTTP::Get.new(uri)
+  req["x-rapidapi-key"] = rapid_key
+  req["x-rapidapi-host"] = rapid_host
+
+  Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 8, read_timeout: 12) do |http|
+    http.request(req)
+  end
+end
+
+server.mount_proc("/world/live") do |_req, res|
+  rapid_key = ENV["RAPIDAPI_KEY"].to_s.strip
+  rapid_host = ENV.fetch("RAPIDAPI_HOST", "api-football-v1.p.rapidapi.com").to_s.strip
+  timezone = ENV.fetch("API_FOOTBALL_TIMEZONE", "Europe/London").to_s.strip
+
+  if rapid_key.empty?
+    res.status = 501
+    res["Cache-Control"] = "no-store"
+    res["Content-Type"] = "application/json"
+    res.body = JSON.dump({
+      ok: false,
+      error: "missing RAPIDAPI_KEY",
+      hint: "Set RAPIDAPI_KEY in your terminal, then run: RAPIDAPI_KEY=YOUR_KEY ruby server.rb",
+    })
+    next
+  end
+
+  ttl = Integer(ENV.fetch("API_FOOTBALL_CACHE_SECONDS", "12")) rescue 12
+  now = Time.now.to_i
+
+  cached = nil
+  rapidapi_lock.synchronize do
+    if rapidapi_cache[:body] && (now - rapidapi_cache[:at]) < ttl
+      cached = rapidapi_cache[:body]
+    end
+  end
+
+  if cached
+    res["Cache-Control"] = "no-store"
+    res["Content-Type"] = "application/json"
+    res.body = cached
+    next
+  end
+
+  begin
+    api_res = fetch_api_football_live(rapid_key: rapid_key, rapid_host: rapid_host, timezone: timezone)
+    body = api_res.body.to_s
+    parsed = JSON.parse(body) rescue nil
+
+    if api_res.code.to_i >= 400 || !parsed.is_a?(Hash)
+      raise "bad response"
+    end
+
+    items = []
+    (parsed["response"] || []).each do |row|
+      fx = row["fixture"] || {}
+      st = fx["status"] || {}
+      league = row["league"] || {}
+      teams = row["teams"] || {}
+      goals = row["goals"] || {}
+
+      items << {
+        "id" => fx["id"],
+        "league" => [league["name"], league["country"]].compact.join(" · "),
+        "home" => (teams.dig("home", "name") || ""),
+        "away" => (teams.dig("away", "name") || ""),
+        "home_score" => goals["home"],
+        "away_score" => goals["away"],
+        "elapsed" => st["elapsed"],
+        "status_short" => st["short"],
+      }
+    end
+
+    payload = JSON.dump({
+      ok: true,
+      source: "api-football",
+      updated_at: Time.now.utc.iso8601,
+      count: items.length,
+      fixtures: items.take(500),
+    })
+
+    rapidapi_lock.synchronize do
+      rapidapi_cache[:at] = now
+      rapidapi_cache[:body] = payload
+      rapidapi_cache[:error] = nil
+    end
+
+    res["Cache-Control"] = "no-store"
+    res["Content-Type"] = "application/json"
+    res.body = payload
+  rescue
+    err_payload = JSON.dump({
+      ok: false,
+      error: "api_football_failed",
+      hint: "Check your RAPIDAPI_KEY plan/limits and internet connection.",
+    })
+    rapidapi_lock.synchronize do
+      rapidapi_cache[:at] = now
+      rapidapi_cache[:body] = nil
+      rapidapi_cache[:error] = err_payload
+    end
+    res.status = 502
+    res["Cache-Control"] = "no-store"
+    res["Content-Type"] = "application/json"
+    res.body = err_payload
+  end
 end
 
 server.mount_proc("/health") do |_req, res|

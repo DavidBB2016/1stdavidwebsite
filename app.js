@@ -2508,20 +2508,11 @@ function onLiveGamesPage() {
   const boardEl = root.querySelector("[data-live-board]");
   if (!boardEl) return;
 
-  let fixtures = [];
-  let source = "local";
+  let world = null; // { updated_at, fixtures: [] }
+  let localFixtures = [];
 
   function pad2(n) {
     return String(n).padStart(2, "0");
-  }
-
-  function formatHms(ms) {
-    const s = Math.max(0, Math.floor(ms / 1000));
-    const hh = Math.floor(s / 3600);
-    const mm = Math.floor((s % 3600) / 60);
-    const ss = s % 60;
-    if (hh > 0) return `${hh}:${pad2(mm)}:${pad2(ss)}`;
-    return `${mm}:${pad2(ss)}`;
   }
 
   function safeDateMs(isoOrLocal) {
@@ -2529,69 +2520,40 @@ function onLiveGamesPage() {
     return Number.isFinite(ms) ? ms : NaN;
   }
 
-  function fixtureCompetition(f) {
-    const comp = String(f.competition || "").trim();
-    return comp || "Friendly";
+  function leagueNameForRow(r) {
+    const name = String(r.league || "").trim();
+    return name || "Live";
   }
 
-  function statusForFixture(f, nowMs) {
-    const kickoffMs = safeDateMs(f.kickoff_iso);
-    const durationMins = Number(f.duration_mins || 90) || 90;
-    const durationMs = Math.max(1, durationMins) * 60 * 1000;
-    const endMs = kickoffMs + durationMs;
-
-    if (!Number.isFinite(kickoffMs)) return { kind: "invalid" };
-    if (nowMs < kickoffMs) return { kind: "upcoming", kickoffMs, endMs, durationMs };
-    if (nowMs >= kickoffMs && nowMs < endMs) return { kind: "live", kickoffMs, endMs, durationMs };
-    return { kind: "finished", kickoffMs, endMs, durationMs };
+  function scoreForRow(r) {
+    const hs = r.home_score;
+    const as = r.away_score;
+    const ok = (typeof hs === "number" || typeof hs === "string") && (typeof as === "number" || typeof as === "string");
+    if (!ok || hs === null || as === null || hs === "" || as === "") return "-";
+    return `${hs}-${as}`;
   }
 
-  function displayTimeForFixture(f, st, nowMs) {
-    if (st.kind === "live") {
-      const mins = Math.max(1, Math.floor((nowMs - st.kickoffMs) / 60000) + 1);
-      return `${mins}'`;
-    }
-    if (st.kind === "finished") return "FT";
-    if (st.kind === "invalid") return "--";
-    try {
-      const d = new Date(f.kickoff_iso);
-      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    } catch {
-      return "--";
-    }
+  function timeForWorldRow(r) {
+    const el = Number(r.elapsed);
+    if (Number.isFinite(el) && el > 0) return `${el}'`;
+    const s = String(r.status_short || "").trim();
+    return s || "LIVE";
   }
 
-  function displayMetaForFixture(f, st, nowMs) {
-    // Keep the leaderboard focused on score, not countdowns.
-    return "";
-  }
-
-  function displayScoreForFixture(f) {
-    const hs = Number(f.home_score);
-    const as = Number(f.away_score);
-    if (Number.isFinite(hs) && Number.isFinite(as)) return `${hs}-${as}`;
-    return "-";
-  }
-
-  function renderRow(f, nowMs) {
-    const st = statusForFixture(f, nowMs);
-    const time = displayTimeForFixture(f, st, nowMs);
-    const meta = displayMetaForFixture(f, st, nowMs);
-    const score = displayScoreForFixture(f);
-    const timeClass = st.kind === "live" ? "fs-time fs-time-live" : "fs-time";
-    const rowClass = st.kind === "live" ? "fs-row fs-row-live" : "fs-row";
-
+  function renderWorldRow(r) {
+    const time = timeForWorldRow(r);
+    const score = scoreForRow(r);
     return `
-      <div class="${rowClass}">
-        <div class="${timeClass}">
+      <div class="fs-row fs-row-live">
+        <div class="fs-time fs-time-live">
           <div class="fs-time-main">${escapeText(time)}</div>
-          ${meta ? `<div class="fs-time-sub">${escapeText(meta)}</div>` : ""}
         </div>
         <div class="fs-teams">
-          <div class="fs-team fs-team-home">${escapeText(f.home || "Home")}</div>
-          <div class="fs-team fs-team-away">${escapeText(f.away || "Away")}</div>
+          <div class="fs-team fs-team-home">${escapeText(r.home || "")}</div>
+          <div class="fs-team fs-team-away">${escapeText(r.away || "")}</div>
         </div>
         <div class="fs-score">${escapeText(score)}</div>
+        <span></span>
       </div>
     `;
   }
@@ -2605,14 +2567,13 @@ function onLiveGamesPage() {
     `;
   }
 
-  async function fetchFixturesFromServer() {
+  async function fetchWorldLive() {
     try {
-      const r = await fetch("/fixtures", { cache: "no-store" });
+      const r = await fetch("/world/live", { cache: "no-store" });
       if (!r.ok) return false;
       const json = await r.json();
       if (!json || json.ok !== true || !Array.isArray(json.fixtures)) return false;
-      fixtures = json.fixtures;
-      source = "server";
+      world = { updated_at: json.updated_at || "", fixtures: json.fixtures };
       return true;
     } catch {
       return false;
@@ -2621,8 +2582,7 @@ function onLiveGamesPage() {
 
   function loadFixturesLocal() {
     const local = readJson(STORAGE_KEYS.fixtures, []);
-    fixtures = Array.isArray(local) ? local : [];
-    source = "local";
+    localFixtures = Array.isArray(local) ? local : [];
   }
 
   function render() {
@@ -2632,47 +2592,86 @@ function onLiveGamesPage() {
       nowEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
     }
 
-    const liveOnly = fixtures.filter((f) => statusForFixture(f, nowMs).kind === "live");
-    if (countEl) countEl.textContent = String(liveOnly.length);
+    const worldItems = world && Array.isArray(world.fixtures) ? world.fixtures : [];
+    if (worldItems.length) {
+      if (countEl) countEl.textContent = String(worldItems.length);
+      const sorted = worldItems
+        .slice()
+        .sort((a, b) => (Number(b.elapsed) || 0) - (Number(a.elapsed) || 0))
+        .slice(0, 400);
 
-    if (!liveOnly.length) {
-      boardEl.innerHTML = `<div class="fs-empty">No live games right now. Add one from Match Request with a kickoff time.</div>`;
+      const byLeague = new Map();
+      for (const r of sorted) {
+        const league = leagueNameForRow(r);
+        if (!byLeague.has(league)) byLeague.set(league, []);
+        byLeague.get(league).push(r);
+      }
+
+      const leagueNames = Array.from(byLeague.keys()).sort((a, b) => a.localeCompare(b));
+      boardEl.innerHTML = leagueNames
+        .map((name) => {
+          const rows = byLeague.get(name).map((r) => renderWorldRow(r)).join("");
+          return renderLeagueBlock(name, rows);
+        })
+        .join("");
       return;
     }
 
-    // Leaderboard: most-advanced games (highest minute) first.
-    const sorted = liveOnly.slice().sort((a, b) => {
-      const sa = statusForFixture(a, nowMs);
-      const sb = statusForFixture(b, nowMs);
-      const ma = sa.kind === "live" ? nowMs - sa.kickoffMs : -1;
-      const mb = sb.kind === "live" ? nowMs - sb.kickoffMs : -1;
-      return mb - ma;
-    });
-
-    const byLeague = new Map();
-    for (const f of sorted) {
-      const league = fixtureCompetition(f);
-      if (!byLeague.has(league)) byLeague.set(league, []);
-      byLeague.get(league).push(f);
+    if (world) {
+      if (countEl) countEl.textContent = "0";
+      boardEl.innerHTML = `<div class="fs-empty">No live games worldwide right now.</div>`;
+      return;
     }
 
-    const leagueNames = Array.from(byLeague.keys()).sort((a, b) => a.localeCompare(b));
-    boardEl.innerHTML = leagueNames
-      .map((name) => {
-        const rows = byLeague.get(name).map((f) => renderRow(f, nowMs)).join("");
-        return renderLeagueBlock(name, rows);
-      })
-      .join("");
+    // Fallback: local list (games you add manually).
+    const liveLocal = (localFixtures || []).filter((f) => {
+      const kickoffMs = safeDateMs(f.kickoff_iso);
+      const durationMins = Number(f.duration_mins || 90) || 90;
+      const endMs = kickoffMs + Math.max(1, durationMins) * 60 * 1000;
+      return Number.isFinite(kickoffMs) && nowMs >= kickoffMs && nowMs < endMs;
+    });
+
+    if (countEl) countEl.textContent = String(liveLocal.length);
+    if (!liveLocal.length) {
+      boardEl.innerHTML = `<div class="fs-empty">No worldwide live games loaded. If you have an API key, run: RAPIDAPI_KEY=YOUR_KEY ruby server.rb</div>`;
+      return;
+    }
+
+    boardEl.innerHTML = renderLeagueBlock(
+      "Local",
+      liveLocal
+        .slice(0, 200)
+        .map((f) => {
+          const hs = f.home_score;
+          const as = f.away_score;
+          const score =
+            hs === null || hs === "" || as === null || as === "" ? "-" : `${Number(hs) || 0}-${Number(as) || 0}`;
+          return `
+            <div class="fs-row fs-row-live">
+              <div class="fs-time fs-time-live">
+                <div class="fs-time-main">LIVE</div>
+              </div>
+              <div class="fs-teams">
+                <div class="fs-team fs-team-home">${escapeText(f.home || "Home")}</div>
+                <div class="fs-team fs-team-away">${escapeText(f.away || "Away")}</div>
+              </div>
+              <div class="fs-score">${escapeText(score)}</div>
+              <span></span>
+            </div>
+          `;
+        })
+        .join("")
+    );
   }
 
   // Initial load tries the server first, then local fallback.
-  fetchFixturesFromServer().then((ok) => {
+  fetchWorldLive().then((ok) => {
     if (!ok) loadFixturesLocal();
     render();
   });
 
   window.setInterval(render, 1000);
-  window.setInterval(() => fetchFixturesFromServer().then((ok) => ok && render()), 5000);
+  window.setInterval(() => fetchWorldLive().then((ok) => ok && render()), 15000);
 }
 
 setActiveNav();
