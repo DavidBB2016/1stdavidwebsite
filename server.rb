@@ -15,6 +15,31 @@ PORT = Integer(ENV.fetch("PORT", "3000"))
 
 STALE_SECONDS = Integer(ENV.fetch("PRESENCE_STALE_SECONDS", "15"))
 
+def load_dotenv(path)
+  return unless File.exist?(path)
+  File.read(path).each_line do |line|
+    s = line.to_s.strip
+    next if s.empty?
+    next if s.start_with?("#")
+    k, v = s.split("=", 2)
+    next unless k && v
+    key = k.strip
+    val = v.strip
+    # Remove surrounding quotes: KEY="value"
+    if (val.start_with?('"') && val.end_with?('"')) || (val.start_with?("'") && val.end_with?("'"))
+      val = val[1..-2]
+    end
+    next if key.empty?
+    next unless ENV[key].to_s.strip.empty?
+    ENV[key] = val
+  end
+rescue
+  # Ignore dotenv parse errors; server should still start.
+end
+
+load_dotenv(File.join(ROOT, ".env.local"))
+load_dotenv(File.join(ROOT, ".env"))
+
 presence = {}
 presence_lock = Mutex.new
 

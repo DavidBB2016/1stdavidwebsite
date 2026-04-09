@@ -28,6 +28,27 @@ ruby server.rb
 
 It runs on `http://0.0.0.0:3000` (open using your Mac's LAN IP like `http://192.168.x.x:3000/`).
 
+## Worldwide live games (API-FOOTBALL / RapidAPI)
+
+The **Live Games** tab can show worldwide live games using API-FOOTBALL via RapidAPI.
+
+1. Get your `X-RapidAPI-Key` from RapidAPI (API-FOOTBALL).
+2. Create a local file called `.env.local` in this folder (it is ignored by GitHub):
+
+```bash
+RAPIDAPI_KEY=PASTE_YOUR_X_RAPIDAPI_KEY_HERE
+RAPIDAPI_HOST=api-football-v1.p.rapidapi.com
+API_FOOTBALL_TIMEZONE=Europe/London
+```
+
+3. Start the server:
+
+```bash
+ruby server.rb
+```
+
+Then open `http://localhost:3000/live.html`.
+
 ## Get found on Google (after publishing)
 
 Your Wi-Fi link (like `http://192.168.x.x:3000/`) cannot show up on Google because it is not public on the internet.
