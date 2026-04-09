@@ -2609,6 +2609,9 @@ function onLiveGamesPage() {
   }
 
   function render() {
+    // Always refresh local fixtures so the page works even when world API is off.
+    loadFixturesLocal();
+
     const now = new Date();
     const nowMs = now.getTime();
     if (nowEl) {
@@ -2641,17 +2644,11 @@ function onLiveGamesPage() {
       return;
     }
 
-    if (world) {
-      if (countEl) countEl.textContent = "0";
-      if (world.error && statusEl) {
-        statusEl.textContent = `World live: OFF · ${String(world.hint || world.error)}`;
-      } else if (statusEl) {
-        statusEl.textContent = "World live: ON · 0 live games right now";
-      }
-      boardEl.innerHTML = world.error
-        ? `<div class="fs-empty">${escapeText(String(world.hint || "World feed needs an API key."))}</div>`
-        : `<div class="fs-empty">No live games worldwide right now.</div>`;
-      return;
+    // If world feed is unavailable (missing key/limits), still show local games.
+    if (world && !world.error) {
+      if (statusEl) statusEl.textContent = "World live: ON · 0 live games right now";
+    } else if (world && world.error) {
+      if (statusEl) statusEl.textContent = `World live: OFF · ${String(world.hint || world.error)}`;
     }
 
     // Fallback: local list (games you add manually).
@@ -2664,12 +2661,15 @@ function onLiveGamesPage() {
 
     if (countEl) countEl.textContent = String(liveLocal.length);
     if (!liveLocal.length) {
-      if (statusEl) statusEl.textContent = "World live: OFF · Add RAPIDAPI_KEY then restart server.rb";
-      boardEl.innerHTML = `<div class="fs-empty">No live games right now. Click “Add test live game” to see it working, or add a real one from Match Request.</div>`;
+      if (!world || (world && world.error)) {
+        boardEl.innerHTML = `<div class="fs-empty">No live games right now. Click “Add test live game” to see it working, or add a real one from Match Request.</div>`;
+      } else {
+        boardEl.innerHTML = `<div class="fs-empty">No live games worldwide right now.</div>`;
+      }
       return;
     }
 
-    if (statusEl) statusEl.textContent = "World live: OFF · Showing local games only";
+    if (statusEl && (!world || world.error)) statusEl.textContent = "World live: OFF · Showing local games only";
     boardEl.innerHTML = renderLeagueBlock(
       "Local",
       liveLocal
