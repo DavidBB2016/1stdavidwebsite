@@ -58,7 +58,7 @@
             If you do not have an API key yet, it will only show games you add from
             <a href="./match-request.html">Match Request</a>.
           </p>
-          <p class="small muted" data-live-status>Loading…</p>
+          <p class="small muted" data-live-status>Loading app…</p>
         </div>
 
         <section class="panel">
@@ -78,14 +78,17 @@
       </div>
     </footer>
 
-    <script type="module">
-      const status = document.querySelector("[data-live-status]");
-      if (status) status.textContent = "Loading app…";
-      import("./app.js").catch((e) => {
-        console.error(e);
-        if (status) status.textContent = "Error loading app.js. Open DevTools Console for details.";
-      });
+    <script>
+      // Show a helpful message even if JS fails to load.
+      (function () {
+        const status = document.querySelector("[data-live-status]");
+        if (!status) return;
+        status.textContent = "Loading app…";
+        window.addEventListener("error", function () {
+          status.textContent = "Error running the page. Try refreshing.";
+        });
+      })();
     </script>
-    <script nomodule src="./app.js"></script>
+    <script defer src="./app.js"></script>
   </body>
 </html>
