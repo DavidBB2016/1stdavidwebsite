@@ -2626,11 +2626,7 @@ function onLiveGamesPage() {
     if (countEl) countEl.textContent = String(liveOnly.length);
 
     if (!liveOnly.length) {
-      const hint =
-        source === "server"
-          ? "No live games right now. Post one from Match Request."
-          : "No live games right now. Run ruby server.rb for shared games on Wi‑Fi.";
-      boardEl.innerHTML = `<div class="fs-empty">${escapeText(hint)}</div>`;
+      boardEl.innerHTML = `<div class="fs-empty">No live games right now. Add one from Match Request with a kickoff time.</div>`;
       return;
     }
 
