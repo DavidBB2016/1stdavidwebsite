@@ -2507,6 +2507,7 @@ function onLiveGamesPage() {
   const countEl = root.querySelector("[data-live-count]");
   const boardEl = root.querySelector("[data-live-board]");
   const statusEl = root.querySelector("[data-live-status]");
+  const demoBtn = root.querySelector("[data-live-demo]");
   if (!boardEl) return;
 
   let world = null; // { updated_at, fixtures: [] } or { error, hint }
@@ -2599,6 +2600,14 @@ function onLiveGamesPage() {
     localFixtures = Array.isArray(local) ? local : [];
   }
 
+  function addLocalFixture(f) {
+    const local = readJson(STORAGE_KEYS.fixtures, []);
+    const list = Array.isArray(local) ? local : [];
+    list.unshift(f);
+    writeJson(STORAGE_KEYS.fixtures, list.slice(0, 200));
+    localFixtures = list.slice(0, 200);
+  }
+
   function render() {
     const now = new Date();
     const nowMs = now.getTime();
@@ -2656,7 +2665,7 @@ function onLiveGamesPage() {
     if (countEl) countEl.textContent = String(liveLocal.length);
     if (!liveLocal.length) {
       if (statusEl) statusEl.textContent = "World live: OFF · Add RAPIDAPI_KEY then restart server.rb";
-      boardEl.innerHTML = `<div class="fs-empty">No worldwide live games loaded. If you have an API key, run: RAPIDAPI_KEY=YOUR_KEY ruby server.rb</div>`;
+      boardEl.innerHTML = `<div class="fs-empty">No live games right now. Click “Add test live game” to see it working, or add a real one from Match Request.</div>`;
       return;
     }
 
@@ -2696,6 +2705,26 @@ function onLiveGamesPage() {
 
   window.setInterval(render, 1000);
   window.setInterval(() => fetchWorldLive().then((ok) => ok && render()), 15000);
+
+  demoBtn?.addEventListener("click", () => {
+    const nowMs = Date.now();
+    const kickoffIso = new Date(nowMs - 5 * 60 * 1000).toISOString(); // started 5 minutes ago
+    const fixture = {
+      id: uid("fx"),
+      created_at: nowIso(),
+      home: "David FC",
+      away: "Test United",
+      kickoff_iso: kickoffIso,
+      duration_mins: 90,
+      competition: "Test match",
+      venue: "Local",
+      home_score: 1,
+      away_score: 0,
+    };
+    addLocalFixture(fixture);
+    toast("Added", "Test live game added locally.");
+    render();
+  });
 }
 
 setActiveNav();
