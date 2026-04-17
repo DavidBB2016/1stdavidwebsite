@@ -3,6 +3,8 @@ const STORAGE_KEYS = {
   requests: "kickoffhub_match_requests_v1",
   tournaments: "kickoffhub_tournament_entries_v1",
   fixtures: "kickoffhub_fixtures_v1",
+  livePrefs: "kickoffhub_live_prefs_v1",
+  liveFavs: "kickoffhub_live_favs_v1",
   tts: "kickoffhub_tts_v1",
   presence: "kickoffhub_presence_v1",
   deviceId: "kickoffhub_device_id_v1",
@@ -2508,10 +2510,21 @@ function onLiveGamesPage() {
   const boardEl = root.querySelector("[data-live-board]");
   const statusEl = root.querySelector("[data-live-status]");
   const demoBtn = root.querySelector("[data-live-demo]");
+  const qInput = root.querySelector("[data-live-q]");
+  const favsToggle = root.querySelector("[data-live-favs]");
+  const refreshBtn = root.querySelector("[data-live-refresh]");
+  const sourceBtns = Array.from(root.querySelectorAll("[data-live-source]"));
   if (!boardEl) return;
 
   let world = null; // { updated_at, fixtures: [] } or { error, hint }
   let localFixtures = [];
+  let favs = new Set((readJson(STORAGE_KEYS.liveFavs, []) || []).map((x) => String(x)));
+  const prefs = readJson(STORAGE_KEYS.livePrefs, { source: "world", favs_only: false, q: "" }) || {};
+  const state = {
+    source: String(prefs.source || "world"),
+    favsOnly: !!prefs.favs_only,
+    q: String(prefs.q || ""),
+  };
 
   function pad2(n) {
     return String(n).padStart(2, "0");
@@ -2520,6 +2533,31 @@ function onLiveGamesPage() {
   function safeDateMs(isoOrLocal) {
     const ms = new Date(isoOrLocal).getTime();
     return Number.isFinite(ms) ? ms : NaN;
+  }
+
+  function norm(s) {
+    return String(s || "").toLowerCase();
+  }
+
+  function savePrefs() {
+    writeJson(STORAGE_KEYS.livePrefs, { source: state.source, favs_only: state.favsOnly, q: state.q });
+  }
+
+  function applyControlsUi() {
+    for (const b of sourceBtns) {
+      const v = b.getAttribute("data-live-source") || "";
+      b.setAttribute("aria-selected", v === state.source ? "true" : "false");
+    }
+    if (qInput && qInput.value !== state.q) qInput.value = state.q;
+    if (favsToggle) favsToggle.checked = state.favsOnly;
+  }
+
+  function toggleFav(id) {
+    const key = String(id || "");
+    if (!key) return;
+    if (favs.has(key)) favs.delete(key);
+    else favs.add(key);
+    writeJson(STORAGE_KEYS.liveFavs, Array.from(favs));
   }
 
   function leagueNameForRow(r) {
@@ -2543,10 +2581,13 @@ function onLiveGamesPage() {
   }
 
   function renderWorldRow(r) {
+    const id = String(r.id || "");
+    const isFav = favs.has(id);
     const time = timeForWorldRow(r);
     const score = scoreForRow(r);
+    const rowClass = isFav ? "fs-row fs-row-live fs-row-fav" : "fs-row fs-row-live";
     return `
-      <div class="fs-row fs-row-live">
+      <div class="${rowClass}" data-fx-id="${escapeText(id)}">
         <div class="fs-time fs-time-live">
           <div class="fs-time-main">${escapeText(time)}</div>
         </div>
@@ -2555,7 +2596,36 @@ function onLiveGamesPage() {
           <div class="fs-team fs-team-away">${escapeText(r.away || "")}</div>
         </div>
         <div class="fs-score">${escapeText(score)}</div>
-        <span></span>
+        <button class="fs-star" type="button" data-fx-fav="${escapeText(id)}" aria-label="Toggle favorite">
+          ${isFav ? "★" : "☆"}
+        </button>
+      </div>
+    `;
+  }
+
+  function renderLocalRow(f, nowMs) {
+    const kickoffMs = safeDateMs(f.kickoff_iso);
+    const mins = Number.isFinite(kickoffMs) ? Math.max(1, Math.floor((nowMs - kickoffMs) / 60000) + 1) : 0;
+    const time = mins ? `${mins}'` : "LIVE";
+    const hs = f.home_score;
+    const as = f.away_score;
+    const score = hs === null || hs === "" || as === null || as === "" ? "-" : `${Number(hs) || 0}-${Number(as) || 0}`;
+    const id = String(f.id || "");
+    const isFav = favs.has(id);
+    const rowClass = isFav ? "fs-row fs-row-live fs-row-fav" : "fs-row fs-row-live";
+    return `
+      <div class="${rowClass}" data-fx-id="${escapeText(id)}">
+        <div class="fs-time fs-time-live">
+          <div class="fs-time-main">${escapeText(time)}</div>
+        </div>
+        <div class="fs-teams">
+          <div class="fs-team fs-team-home">${escapeText(f.home || "Home")}</div>
+          <div class="fs-team fs-team-away">${escapeText(f.away || "Away")}</div>
+        </div>
+        <div class="fs-score">${escapeText(score)}</div>
+        <button class="fs-star" type="button" data-fx-fav="${escapeText(id)}" aria-label="Toggle favorite">
+          ${isFav ? "★" : "☆"}
+        </button>
       </div>
     `;
   }
@@ -2611,6 +2681,7 @@ function onLiveGamesPage() {
   function render() {
     // Always refresh local fixtures so the page works even when world API is off.
     loadFixturesLocal();
+    applyControlsUi();
 
     const now = new Date();
     const nowMs = now.getTime();
@@ -2618,14 +2689,55 @@ function onLiveGamesPage() {
       nowEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
     }
 
+    const q = norm(state.q);
+
+    function matchesWorld(r) {
+      if (!q) return true;
+      const hay = norm(`${r.league || ""} ${r.home || ""} ${r.away || ""}`);
+      return hay.includes(q);
+    }
+
+    function matchesLocal(f) {
+      if (!q) return true;
+      const hay = norm(`${f.competition || ""} ${f.home || ""} ${f.away || ""} ${f.venue || ""}`);
+      return hay.includes(q);
+    }
+
     const worldItems = world && Array.isArray(world.fixtures) ? world.fixtures : [];
-    if (worldItems.length) {
-      if (countEl) countEl.textContent = String(worldItems.length);
-      if (statusEl) statusEl.textContent = `World live: ON · Updated: ${String(world.updated_at || "just now")}`;
-      const sorted = worldItems
+
+    const showingWorld = state.source === "world";
+
+    if (showingWorld) {
+      if (world && world.error) {
+        if (statusEl) statusEl.textContent = `World live: OFF · ${String(world.hint || world.error)}`;
+      } else if (worldItems.length) {
+        if (statusEl) statusEl.textContent = `World live: ON · Updated: ${String(world.updated_at || "just now")}`;
+      } else if (world) {
+        if (statusEl) statusEl.textContent = "World live: ON · 0 live games right now";
+      } else {
+        if (statusEl) statusEl.textContent = "World live: Loading…";
+      }
+
+      const filtered = worldItems
+        .filter(matchesWorld)
+        .filter((r) => (state.favsOnly ? favs.has(String(r.id || "")) : true));
+
+      if (countEl) countEl.textContent = String(filtered.length);
+      if (!filtered.length) {
+        if (world && world.error) {
+          boardEl.innerHTML = `<div class="fs-empty">${escapeText(String(world.hint || "World feed needs an API key."))}</div>`;
+        } else if (world) {
+          boardEl.innerHTML = `<div class="fs-empty">No world live games match your filters.</div>`;
+        } else {
+          boardEl.innerHTML = `<div class="fs-empty">Loading world live games…</div>`;
+        }
+        return;
+      }
+
+      const sorted = filtered
         .slice()
         .sort((a, b) => (Number(b.elapsed) || 0) - (Number(a.elapsed) || 0))
-        .slice(0, 400);
+        .slice(0, 500);
 
       const byLeague = new Map();
       for (const r of sorted) {
@@ -2644,13 +2756,6 @@ function onLiveGamesPage() {
       return;
     }
 
-    // If world feed is unavailable (missing key/limits), still show local games.
-    if (world && !world.error) {
-      if (statusEl) statusEl.textContent = "World live: ON · 0 live games right now";
-    } else if (world && world.error) {
-      if (statusEl) statusEl.textContent = `World live: OFF · ${String(world.hint || world.error)}`;
-    }
-
     // Fallback: local list (games you add manually).
     const liveLocal = (localFixtures || []).filter((f) => {
       const kickoffMs = safeDateMs(f.kickoff_iso);
@@ -2659,40 +2764,29 @@ function onLiveGamesPage() {
       return Number.isFinite(kickoffMs) && nowMs >= kickoffMs && nowMs < endMs;
     });
 
-    if (countEl) countEl.textContent = String(liveLocal.length);
+    const filteredLocal = liveLocal
+      .filter(matchesLocal)
+      .filter((f) => (state.favsOnly ? favs.has(String(f.id || "")) : true));
+
+    if (countEl) countEl.textContent = String(filteredLocal.length);
     if (!liveLocal.length) {
-      if (!world || (world && world.error)) {
-        boardEl.innerHTML = `<div class="fs-empty">No live games right now. Click “Add test live game” to see it working, or add a real one from Match Request.</div>`;
-      } else {
-        boardEl.innerHTML = `<div class="fs-empty">No live games worldwide right now.</div>`;
-      }
+      if (statusEl) statusEl.textContent = "Local live: 0";
+      boardEl.innerHTML = `<div class="fs-empty">No local live games right now. Add one from Match Request or press “Add test live game”.</div>`;
       return;
     }
 
-    if (statusEl && (!world || world.error)) statusEl.textContent = "World live: OFF · Showing local games only";
+    if (!filteredLocal.length) {
+      if (statusEl) statusEl.textContent = `Local live: ${liveLocal.length}`;
+      boardEl.innerHTML = `<div class="fs-empty">No local games match your filters.</div>`;
+      return;
+    }
+
+    if (statusEl) statusEl.textContent = `Local live: ${filteredLocal.length}`;
     boardEl.innerHTML = renderLeagueBlock(
       "Local",
-      liveLocal
+      filteredLocal
         .slice(0, 200)
-        .map((f) => {
-          const hs = f.home_score;
-          const as = f.away_score;
-          const score =
-            hs === null || hs === "" || as === null || as === "" ? "-" : `${Number(hs) || 0}-${Number(as) || 0}`;
-          return `
-            <div class="fs-row fs-row-live">
-              <div class="fs-time fs-time-live">
-                <div class="fs-time-main">LIVE</div>
-              </div>
-              <div class="fs-teams">
-                <div class="fs-team fs-team-home">${escapeText(f.home || "Home")}</div>
-                <div class="fs-team fs-team-away">${escapeText(f.away || "Away")}</div>
-              </div>
-              <div class="fs-score">${escapeText(score)}</div>
-              <span></span>
-            </div>
-          `;
-        })
+        .map((f) => renderLocalRow(f, nowMs))
         .join("")
     );
   }
@@ -2705,6 +2799,38 @@ function onLiveGamesPage() {
 
   window.setInterval(render, 1000);
   window.setInterval(() => fetchWorldLive().then((ok) => ok && render()), 15000);
+
+  // Controls
+  applyControlsUi();
+  qInput?.addEventListener("input", () => {
+    state.q = qInput.value || "";
+    savePrefs();
+    render();
+  });
+  favsToggle?.addEventListener("change", () => {
+    state.favsOnly = !!favsToggle.checked;
+    savePrefs();
+    render();
+  });
+  refreshBtn?.addEventListener("click", () => {
+    fetchWorldLive().then(() => render());
+  });
+  for (const b of sourceBtns) {
+    b.addEventListener("click", () => {
+      const v = b.getAttribute("data-live-source") || "world";
+      state.source = v === "local" ? "local" : "world";
+      savePrefs();
+      render();
+    });
+  }
+
+  boardEl.addEventListener("click", (e) => {
+    const btn = e.target && e.target.closest ? e.target.closest("[data-fx-fav]") : null;
+    if (!btn) return;
+    const id = btn.getAttribute("data-fx-fav") || "";
+    toggleFav(id);
+    render();
+  });
 
   demoBtn?.addEventListener("click", () => {
     const nowMs = Date.now();

@@ -67,6 +67,29 @@
 
         <section class="panel">
           <div class="panel-body">
+            <div class="fs-controls" data-live-controls>
+              <div class="fs-controls-left">
+                <div class="segmented" role="tablist" aria-label="Live games source">
+                  <button class="seg-btn" type="button" data-live-source="world" aria-selected="true">World</button>
+                  <button class="seg-btn" type="button" data-live-source="local" aria-selected="false">Local</button>
+                </div>
+                <label class="sr-only" for="live-search">Search games</label>
+                <input
+                  id="live-search"
+                  class="fs-search"
+                  data-live-q
+                  placeholder="Search team or league"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="fs-controls-right">
+                <label class="fs-toggle">
+                  <input type="checkbox" data-live-favs />
+                  <span>Favorites</span>
+                </label>
+                <button class="btn btn-ghost" type="button" data-live-refresh>Refresh</button>
+              </div>
+            </div>
             <div class="fs-board" data-live-board>
               <div class="fs-empty">Loading live games…</div>
             </div>
