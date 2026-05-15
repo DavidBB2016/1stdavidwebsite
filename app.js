@@ -1660,6 +1660,38 @@ function onSocialPage() {
     `;
   }
 
+  async function shareUrl(label, href) {
+    const url = String(href || "").trim();
+    if (!url) return;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: label, text: label, url });
+        return;
+      }
+    } catch {
+      // fall through to clipboard
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Copied", `${label} link copied.`);
+    } catch {
+      toast("Copy failed", url);
+    }
+  }
+
+  function renderTile(i) {
+    return `
+      <span class="social-tile">
+        <a class="social-app ${escapeText(i.cls)}" href="${escapeText(i.href)}" target="_blank" rel="noreferrer" aria-label="${escapeText(
+          i.label
+        )}" title="${escapeText(i.label)}">${iconSvg(i.key)}</a>
+        <button class="social-share" type="button" data-social-share="${escapeText(i.href)}" data-social-label="${escapeText(
+          i.label
+        )}" aria-label="Share ${escapeText(i.label)}" title="Share">↗</button>
+      </span>
+    `;
+  }
+
   function saveSocials(s) {
     writeJson(key, s);
   }
@@ -1686,12 +1718,7 @@ function onSocialPage() {
     preview.innerHTML = `
       <div class="social-row">
         ${items
-          .map(
-            (i) =>
-              `<a class="social-app ${escapeText(i.cls)}" href="${escapeText(i.href)}" target="_blank" rel="noreferrer" aria-label="${escapeText(
-                i.label
-              )}" title="${escapeText(i.label)}">${iconSvg(i.key)}</a>`
-          )
+          .map((i) => renderTile(i))
           .join("")}
       </div>
     `;
@@ -1703,6 +1730,17 @@ function onSocialPage() {
     if (el && current[name]) el.value = current[name];
   }
   renderPreview(current);
+
+  if (!preview.__shareBound) {
+    preview.__shareBound = true;
+    preview.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest("[data-social-share]") : null;
+      if (!btn) return;
+      const href = btn.getAttribute("data-social-share") || "";
+      const label = btn.getAttribute("data-social-label") || "Social";
+      shareUrl(label, href);
+    });
+  }
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -2191,6 +2229,38 @@ function setupFooterSocials() {
     return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.4c3.3 0 6 2.7 6 6v4.1c0 .7.5 1.1 1.3 1.4.8.3 1.5.6 1.5 1.4 0 .8-.9 1.3-2.1 1.7-.7.2-1.2.5-1.4 1.1-.3 1.1-1.2 1.7-2.6 1.9-.8.1-1.2.5-1.6 1.1-.6.9-1.7 1.5-3.1 1.5s-2.5-.6-3.1-1.5c-.4-.6-.8-1-1.6-1.1-1.4-.2-2.3-.8-2.6-1.9-.2-.6-.7-.9-1.4-1.1C.9 19.3 0 18.8 0 18c0-.8.7-1.1 1.5-1.4.8-.3 1.3-.7 1.3-1.4V8.4c0-3.3 2.7-6 6-6h3.2Zm0 2h-1.6A4.4 4.4 0 0 0 6 8.8v4.8c0 1.6-1.2 2.4-2.6 2.9.6.3 1.2.6 1.5 1.5.1.4.5.6 1 .7 1.4.2 2.4.9 3.1 1.9.2.3.7.6 1 .6s.8-.3 1-.6c.7-1 1.7-1.7 3.1-1.9.5-.1.9-.3 1-.7.3-.9.9-1.2 1.5-1.5-1.4-.5-2.6-1.3-2.6-2.9V8.8A4.4 4.4 0 0 0 13.6 4.4H12Z"/></svg>`;
   }
 
+  async function shareUrl(label, href) {
+    const url = String(href || "").trim();
+    if (!url) return;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: label, text: label, url });
+        return;
+      }
+    } catch {
+      // fall through to clipboard
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Copied", `${label} link copied.`);
+    } catch {
+      toast("Copy failed", url);
+    }
+  }
+
+  function renderTile(i) {
+    return `
+      <span class="social-tile">
+        <a class="social-app ${escapeText(i.cls)}" href="${escapeText(i.href)}" target="_blank" rel="noreferrer" aria-label="${escapeText(
+          i.label
+        )}" title="${escapeText(i.label)}">${iconSvg(i.key)}</a>
+        <button class="social-share" type="button" data-social-share="${escapeText(i.href)}" data-social-label="${escapeText(
+          i.label
+        )}" aria-label="Share ${escapeText(i.label)}" title="Share">↗</button>
+      </span>
+    `;
+  }
+
   const links = [];
   if (socials && typeof socials === "object") {
     const map = [
@@ -2222,19 +2292,21 @@ function setupFooterSocials() {
       <p class="fine">Follow:</p>
       <div class="social-row">
         ${links
-          .map((l) => {
-            return `<a class="social-app ${escapeText(l.cls)}" href="${escapeText(
-              l.href
-            )}" target="_blank" rel="noreferrer" aria-label="${escapeText(l.label)}" title="${escapeText(
-              l.label
-            )}">${iconSvg(l.key)}</a>`;
-          })
+          .map((l) => renderTile(l))
           .join("")}
       </div>
     `;
   }
 
   foot.appendChild(box);
+
+  box.addEventListener("click", (e) => {
+    const btn = e.target && e.target.closest ? e.target.closest("[data-social-share]") : null;
+    if (!btn) return;
+    const href = btn.getAttribute("data-social-share") || "";
+    const label = btn.getAttribute("data-social-label") || "Social";
+    shareUrl(label, href);
+  });
 }
 
 function formatMaybeDate(value) {

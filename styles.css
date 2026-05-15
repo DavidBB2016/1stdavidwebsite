@@ -612,6 +612,39 @@ a:hover {
   align-items: center;
 }
 
+.social-tile {
+  position: relative;
+  display: inline-flex;
+}
+
+.social-share {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.92);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.social-share:hover {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.social-share:focus {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
 .ad-card {
   border-radius: calc(var(--radius) + 6px);
   border: 1px solid rgba(255, 255, 255, 0.16);
