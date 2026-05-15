@@ -612,6 +612,36 @@ a:hover {
   align-items: center;
 }
 
+.ad-card {
+  border-radius: calc(var(--radius) + 6px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: radial-gradient(circle at 20% 10%, rgba(110, 243, 179, 0.16), transparent 55%),
+    radial-gradient(circle at 80% 80%, rgba(106, 208, 255, 0.14), transparent 55%),
+    rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.ad-kicker {
+  margin: 0 0 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22px;
+  color: var(--muted);
+}
+
+.ad-title {
+  margin: 0 0 6px;
+  font-weight: 950;
+  letter-spacing: 0.1px;
+}
+
+.ad-copy {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
 .social-app {
   width: 54px;
   height: 54px;
@@ -657,6 +687,42 @@ a:hover {
 
 .social-app.sc {
   background: radial-gradient(circle at 50% 35%, rgba(255, 255, 0, 0.22), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.tt {
+  background: radial-gradient(circle at 35% 35%, rgba(0, 255, 255, 0.16), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(255, 60, 120, 0.16), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.x {
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.10), transparent 55%),
+    rgba(0, 0, 0, 0.22);
+}
+
+.social-app.fb {
+  background: radial-gradient(circle at 45% 35%, rgba(80, 130, 255, 0.20), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.wa {
+  background: radial-gradient(circle at 45% 35%, rgba(60, 255, 150, 0.18), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.dc {
+  background: radial-gradient(circle at 45% 35%, rgba(120, 130, 255, 0.18), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.tw {
+  background: radial-gradient(circle at 45% 35%, rgba(180, 90, 255, 0.18), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.sp {
+  background: radial-gradient(circle at 45% 35%, rgba(70, 255, 120, 0.16), transparent 55%),
     rgba(0, 0, 0, 0.18);
 }
 

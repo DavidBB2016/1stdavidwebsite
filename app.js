@@ -1604,6 +1604,55 @@ function onSocialPage() {
         </svg>
       `;
     }
+    if (kind === "tiktok") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M16.7 3c.3 2.1 1.5 3.7 3.3 4.6v2.8c-1.9-.1-3.6-.7-5-1.8v7c0 3.1-2.5 5.6-5.6 5.6S4 18.7 4 15.6s2.5-5.6 5.6-5.6c.3 0 .6 0 .9.1v3c-.3-.1-.6-.2-.9-.2-1.4 0-2.6 1.2-2.6 2.6s1.2 2.6 2.6 2.6 2.6-1.2 2.6-2.6V3h4.2Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "x") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.8l-5.3-6.4L5.2 22H2l7.4-8.5L1 2h7l4.8 5.8L18.9 2Zm-2.4 18h1.9L7.4 3.9H5.3L16.5 20Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "facebook") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M13.5 22v-8h2.7l.5-3H13.5V9.1c0-.9.3-1.5 1.6-1.5h1.8V5c-.3 0-1.5-.1-2.9-.1-2.9 0-4.8 1.8-4.8 5V11H6v3h3.4v8h4.1Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "whatsapp") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M12 2a9.7 9.7 0 0 0-8.4 14.7L2.5 22l5.4-1.1A9.7 9.7 0 1 0 12 2Zm0 2a7.7 7.7 0 0 1 0 15.4c-1.2 0-2.4-.3-3.4-.8l-.4-.2-3.1.6.6-3-.2-.4A7.7 7.7 0 0 1 12 4Zm4.3 11.2c-.2.6-1 1.1-1.7 1.3-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2.1 1-2.4.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.3.1.5 0 .7l-.3.5c-.1.2-.2.3-.1.5.2.3.7 1.3 1.6 2 .9.8 1.6 1.1 1.9 1.2.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l2.1 1c.3.2.5.3.5.5 0 .2 0 .7-.2 1.3Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "discord") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M16.9 5.3c-1.1-.5-2.2-.8-3.4-1l-.4.8c-1.2-.2-2.3-.2-3.5 0l-.4-.8c-1.2.2-2.3.6-3.4 1C3.5 8 3 10.7 3 13.3c0 2.6 1.3 5 1.3 5 1.5 1.1 3 1.4 3 1.4l.7-1.1c-.4-.1-.8-.3-1.1-.5l.3-.2c2.1 1 4.4 1 6.5 0l.3.2c-.3.2-.7.4-1.1.5l.7 1.1s1.5-.3 3-1.4c0 0 1.3-2.4 1.3-5 0-2.6-.5-5.3-2.1-8Zm-6.2 10c-.7 0-1.3-.6-1.3-1.4s.6-1.4 1.3-1.4 1.3.6 1.3 1.4-.6 1.4-1.3 1.4Zm4.6 0c-.7 0-1.3-.6-1.3-1.4s.6-1.4 1.3-1.4 1.3.6 1.3 1.4-.6 1.4-1.3 1.4Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "twitch") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M4 3h17v10.6L16.7 18H13l-2 2H8.3v-2H5V5.2L4 3Zm3 4v9h2.6v2.2L11.8 16H16l3-3V5H7.2L7 7Zm5 1.2h2v5h-2v-5Zm4 0h2v5h-2v-5Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "spotify") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M12 2a10 10 0 1 0 .1 20A10 10 0 0 0 12 2Zm4.6 14.4c-.2.3-.6.4-.9.2-2.6-1.6-5.9-2-9.8-1.1-.4.1-.7-.1-.8-.5-.1-.4.1-.7.5-.8 4.3-1 8-.6 10.9 1.3.3.2.4.6.1.9Zm1.3-3c-.2.3-.7.5-1 .2-3-1.9-7.6-2.5-11.1-1.4-.4.1-.8-.1-.9-.5-.1-.4.1-.8.5-.9 4-1.2 9-.6 12.4 1.6.3.2.4.7.1 1Zm.1-3.1C14.5 8 8.8 7.8 5.6 8.8c-.5.1-1-.1-1.1-.6-.1-.5.1-1 .6-1.1 3.7-1.1 10-1 14 .9.5.2.7.8.5 1.2-.2.5-.8.7-1.2.5Z"/>
+        </svg>
+      `;
+    }
     return `
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path fill="currentColor" d="M12 2.4c3.3 0 6 2.7 6 6v4.1c0 .7.5 1.1 1.3 1.4.8.3 1.5.6 1.5 1.4 0 .8-.9 1.3-2.1 1.7-.7.2-1.2.5-1.4 1.1-.3 1.1-1.2 1.7-2.6 1.9-.8.1-1.2.5-1.6 1.1-.6.9-1.7 1.5-3.1 1.5s-2.5-.6-3.1-1.5c-.4-.6-.8-1-1.6-1.1-1.4-.2-2.3-.8-2.6-1.9-.2-.6-.7-.9-1.4-1.1C.9 19.3 0 18.8 0 18c0-.8.7-1.1 1.5-1.4.8-.3 1.3-.7 1.3-1.4V8.4c0-3.3 2.7-6 6-6h3.2Zm0 2h-1.6A4.4 4.4 0 0 0 6 8.8v4.8c0 1.6-1.2 2.4-2.6 2.9.6.3 1.2.6 1.5 1.5.1.4.5.6 1 .7 1.4.2 2.4.9 3.1 1.9.2.3.7.6 1 .6s.8-.3 1-.6c.7-1 1.7-1.7 3.1-1.9.5-.1.9-.3 1-.7.3-.9.9-1.2 1.5-1.5-1.4-.5-2.6-1.3-2.6-2.9V8.8A4.4 4.4 0 0 0 13.6 4.4H12Z"/>
@@ -1617,9 +1666,16 @@ function onSocialPage() {
 
   function renderPreview(s) {
     const items = [
-      { key: "youtube", cls: "yt", label: "YouTube", href: s.youtube || "" },
-      { key: "snapchat", cls: "sc", label: "Snapchat", href: snapchatHref(s.snapchat || "") },
       { key: "instagram", cls: "ig", label: "Instagram", href: s.instagram || "" },
+      { key: "youtube", cls: "yt", label: "YouTube", href: s.youtube || "" },
+      { key: "tiktok", cls: "tt", label: "TikTok", href: s.tiktok || "" },
+      { key: "snapchat", cls: "sc", label: "Snapchat", href: snapchatHref(s.snapchat || "") },
+      { key: "x", cls: "x", label: "X", href: s.x || "" },
+      { key: "facebook", cls: "fb", label: "Facebook", href: s.facebook || "" },
+      { key: "whatsapp", cls: "wa", label: "WhatsApp", href: s.whatsapp || "" },
+      { key: "discord", cls: "dc", label: "Discord", href: s.discord || "" },
+      { key: "twitch", cls: "tw", label: "Twitch", href: s.twitch || "" },
+      { key: "spotify", cls: "sp", label: "Spotify", href: s.spotify || "" },
     ].filter((i) => i.href);
 
     if (!items.length) {
@@ -1642,7 +1698,7 @@ function onSocialPage() {
   }
 
   const current = readSocials();
-  for (const name of ["instagram", "youtube", "snapchat"]) {
+  for (const name of ["instagram", "youtube", "tiktok", "snapchat", "x", "facebook", "whatsapp", "discord", "twitch", "spotify"]) {
     const el = form.querySelector(`[name="${name}"]`);
     if (el && current[name]) el.value = current[name];
   }
@@ -1654,7 +1710,14 @@ function onSocialPage() {
     const next = {
       instagram: normalizeUrl(data.instagram),
       youtube: normalizeUrl(data.youtube),
+      tiktok: normalizeUrl(data.tiktok),
       snapchat: String(data.snapchat || "").trim(),
+      x: normalizeUrl(data.x),
+      facebook: normalizeUrl(data.facebook),
+      whatsapp: normalizeUrl(data.whatsapp),
+      discord: normalizeUrl(data.discord),
+      twitch: normalizeUrl(data.twitch),
+      spotify: normalizeUrl(data.spotify),
     };
     saveSocials(next);
     renderPreview(next);
@@ -2114,35 +2177,38 @@ function setupFooterSocials() {
   }
 
   function iconSvg(kind) {
-    if (kind === "instagram") {
-      return `
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path fill="currentColor" d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4A5.8 5.8 0 0 1 16.2 22H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm4.2 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM17.4 6.2a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/>
-        </svg>
-      `;
-    }
-    if (kind === "youtube") {
-      return `
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path fill="currentColor" d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.6 4.6 12 4.6 12 4.6s-5.6 0-7.5.5A3 3 0 0 0 2.4 7.2 31.6 31.6 0 0 0 2 12a31.6 31.6 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.9.5 7.5.5 7.5.5s5.6 0 7.5-.5a3 3 0 0 0 2.1-2.1A31.6 31.6 0 0 0 22 12a31.6 31.6 0 0 0-.4-4.8ZM10 15.4V8.6L16 12l-6 3.4Z"/>
-        </svg>
-      `;
-    }
-    return `
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path fill="currentColor" d="M12 2.4c3.3 0 6 2.7 6 6v4.1c0 .7.5 1.1 1.3 1.4.8.3 1.5.6 1.5 1.4 0 .8-.9 1.3-2.1 1.7-.7.2-1.2.5-1.4 1.1-.3 1.1-1.2 1.7-2.6 1.9-.8.1-1.2.5-1.6 1.1-.6.9-1.7 1.5-3.1 1.5s-2.5-.6-3.1-1.5c-.4-.6-.8-1-1.6-1.1-1.4-.2-2.3-.8-2.6-1.9-.2-.6-.7-.9-1.4-1.1C.9 19.3 0 18.8 0 18c0-.8.7-1.1 1.5-1.4.8-.3 1.3-.7 1.3-1.4V8.4c0-3.3 2.7-6 6-6h3.2Zm0 2h-1.6A4.4 4.4 0 0 0 6 8.8v4.8c0 1.6-1.2 2.4-2.6 2.9.6.3 1.2.6 1.5 1.5.1.4.5.6 1 .7 1.4.2 2.4.9 3.1 1.9.2.3.7.6 1 .6s.8-.3 1-.6c.7-1 1.7-1.7 3.1-1.9.5-.1.9-.3 1-.7.3-.9.9-1.2 1.5-1.5-1.4-.5-2.6-1.3-2.6-2.9V8.8A4.4 4.4 0 0 0 13.6 4.4H12Z"/>
-      </svg>
-    `;
+    // Reuse the social icons defined on the Social page.
+    // (Copied to keep this function self-contained.)
+    if (kind === "instagram") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4A5.8 5.8 0 0 1 16.2 22H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm4.2 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM17.4 6.2a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/></svg>`;
+    if (kind === "youtube") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.6 4.6 12 4.6 12 4.6s-5.6 0-7.5.5A3 3 0 0 0 2.4 7.2 31.6 31.6 0 0 0 2 12a31.6 31.6 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.9.5 7.5.5 7.5.5s5.6 0 7.5-.5a3 3 0 0 0 2.1-2.1A31.6 31.6 0 0 0 22 12a31.6 31.6 0 0 0-.4-4.8ZM10 15.4V8.6L16 12l-6 3.4Z"/></svg>`;
+    if (kind === "tiktok") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16.7 3c.3 2.1 1.5 3.7 3.3 4.6v2.8c-1.9-.1-3.6-.7-5-1.8v7c0 3.1-2.5 5.6-5.6 5.6S4 18.7 4 15.6s2.5-5.6 5.6-5.6c.3 0 .6 0 .9.1v3c-.3-.1-.6-.2-.9-.2-1.4 0-2.6 1.2-2.6 2.6s1.2 2.6 2.6 2.6 2.6-1.2 2.6-2.6V3h4.2Z"/></svg>`;
+    if (kind === "x") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23 22h-6.8l-5.3-6.4L5.2 22H2l7.4-8.5L1 2h7l4.8 5.8L18.9 2Zm-2.4 18h1.9L7.4 3.9H5.3L16.5 20Z"/></svg>`;
+    if (kind === "facebook") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13.5 22v-8h2.7l.5-3H13.5V9.1c0-.9.3-1.5 1.6-1.5h1.8V5c-.3 0-1.5-.1-2.9-.1-2.9 0-4.8 1.8-4.8 5V11H6v3h3.4v8h4.1Z"/></svg>`;
+    if (kind === "whatsapp") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a9.7 9.7 0 0 0-8.4 14.7L2.5 22l5.4-1.1A9.7 9.7 0 1 0 12 2Zm0 2a7.7 7.7 0 0 1 0 15.4c-1.2 0-2.4-.3-3.4-.8l-.4-.2-3.1.6.6-3-.2-.4A7.7 7.7 0 0 1 12 4Zm4.3 11.2c-.2.6-1 1.1-1.7 1.3-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2.1 1-2.4.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.3.1.5 0 .7l-.3.5c-.1.2-.2.3-.1.5.2.3.7 1.3 1.6 2 .9.8 1.6 1.1 1.9 1.2.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l2.1 1c.3.2.5.3.5.5 0 .2 0 .7-.2 1.3Z"/></svg>`;
+    if (kind === "discord") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16.9 5.3c-1.1-.5-2.2-.8-3.4-1l-.4.8c-1.2-.2-2.3-.2-3.5 0l-.4-.8c-1.2.2-2.3.6-3.4 1C3.5 8 3 10.7 3 13.3c0 2.6 1.3 5 1.3 5 1.5 1.1 3 1.4 3 1.4l.7-1.1c-.4-.1-.8-.3-1.1-.5l.3-.2c2.1 1 4.4 1 6.5 0l.3.2c-.3.2-.7.4-1.1.5l.7 1.1s1.5-.3 3-1.4c0 0 1.3-2.4 1.3-5 0-2.6-.5-5.3-2.1-8Zm-6.2 10c-.7 0-1.3-.6-1.3-1.4s.6-1.4 1.3-1.4 1.3.6 1.3 1.4-.6 1.4-1.3 1.4Zm4.6 0c-.7 0-1.3-.6-1.3-1.4s.6-1.4 1.3-1.4 1.3.6 1.3 1.4-.6 1.4-1.3 1.4Z"/></svg>`;
+    if (kind === "twitch") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 3h17v10.6L16.7 18H13l-2 2H8.3v-2H5V5.2L4 3Zm3 4v9h2.6v2.2L11.8 16H16l3-3V5H7.2L7 7Zm5 1.2h2v5h-2v-5Zm4 0h2v5h-2v-5Z"/></svg>`;
+    if (kind === "spotify") return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a10 10 0 1 0 .1 20A10 10 0 0 0 12 2Zm4.6 14.4c-.2.3-.6.4-.9.2-2.6-1.6-5.9-2-9.8-1.1-.4.1-.7-.1-.8-.5-.1-.4.1-.7.5-.8 4.3-1 8-.6 10.9 1.3.3.2.4.6.1.9Zm1.3-3c-.2.3-.7.5-1 .2-3-1.9-7.6-2.5-11.1-1.4-.4.1-.8-.1-.9-.5-.1-.4.1-.8.5-.9 4-1.2 9-.6 12.4 1.6.3.2.4.7.1 1Zm.1-3.1C14.5 8 8.8 7.8 5.6 8.8c-.5.1-1-.1-1.1-.6-.1-.5.1-1 .6-1.1 3.7-1.1 10-1 14 .9.5.2.7.8.5 1.2-.2.5-.8.7-1.2.5Z"/></svg>`;
+    return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.4c3.3 0 6 2.7 6 6v4.1c0 .7.5 1.1 1.3 1.4.8.3 1.5.6 1.5 1.4 0 .8-.9 1.3-2.1 1.7-.7.2-1.2.5-1.4 1.1-.3 1.1-1.2 1.7-2.6 1.9-.8.1-1.2.5-1.6 1.1-.6.9-1.7 1.5-3.1 1.5s-2.5-.6-3.1-1.5c-.4-.6-.8-1-1.6-1.1-1.4-.2-2.3-.8-2.6-1.9-.2-.6-.7-.9-1.4-1.1C.9 19.3 0 18.8 0 18c0-.8.7-1.1 1.5-1.4.8-.3 1.3-.7 1.3-1.4V8.4c0-3.3 2.7-6 6-6h3.2Zm0 2h-1.6A4.4 4.4 0 0 0 6 8.8v4.8c0 1.6-1.2 2.4-2.6 2.9.6.3 1.2.6 1.5 1.5.1.4.5.6 1 .7 1.4.2 2.4.9 3.1 1.9.2.3.7.6 1 .6s.8-.3 1-.6c.7-1 1.7-1.7 3.1-1.9.5-.1.9-.3 1-.7.3-.9.9-1.2 1.5-1.5-1.4-.5-2.6-1.3-2.6-2.9V8.8A4.4 4.4 0 0 0 13.6 4.4H12Z"/></svg>`;
   }
 
   const links = [];
   if (socials && typeof socials === "object") {
-    const yt = String(socials.youtube || "").trim();
-    const sc = snapchatHref(socials.snapchat || "");
-    const ig = String(socials.instagram || "").trim();
-    if (yt) links.push({ key: "youtube", cls: "yt", label: "YouTube", href: yt });
-    if (sc) links.push({ key: "snapchat", cls: "sc", label: "Snapchat", href: sc });
-    if (ig) links.push({ key: "instagram", cls: "ig", label: "Instagram", href: ig });
+    const map = [
+      ["instagram", "ig", "Instagram", socials.instagram],
+      ["youtube", "yt", "YouTube", socials.youtube],
+      ["tiktok", "tt", "TikTok", socials.tiktok],
+      ["snapchat", "sc", "Snapchat", snapchatHref(socials.snapchat)],
+      ["x", "x", "X", socials.x],
+      ["facebook", "fb", "Facebook", socials.facebook],
+      ["whatsapp", "wa", "WhatsApp", socials.whatsapp],
+      ["discord", "dc", "Discord", socials.discord],
+      ["twitch", "tw", "Twitch", socials.twitch],
+      ["spotify", "sp", "Spotify", socials.spotify],
+    ];
+    for (const [key, cls, label, href] of map) {
+      const h = String(href || "").trim();
+      if (h) links.push({ key, cls, label, href: h });
+    }
   }
 
   const box = document.createElement("div");
