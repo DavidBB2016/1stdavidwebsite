@@ -1582,19 +1582,45 @@ function onSocialPage() {
     }
   }
 
+  function snapchatHref(value) {
+    const v = String(value || "").trim();
+    if (!v) return "";
+    if (v.includes("://")) return v;
+    return `https://www.snapchat.com/add/${encodeURIComponent(v)}`;
+  }
+
+  function iconSvg(kind) {
+    if (kind === "instagram") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4A5.8 5.8 0 0 1 16.2 22H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm4.2 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM17.4 6.2a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "youtube") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.6 4.6 12 4.6 12 4.6s-5.6 0-7.5.5A3 3 0 0 0 2.4 7.2 31.6 31.6 0 0 0 2 12a31.6 31.6 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.9.5 7.5.5 7.5.5s5.6 0 7.5-.5a3 3 0 0 0 2.1-2.1A31.6 31.6 0 0 0 22 12a31.6 31.6 0 0 0-.4-4.8ZM10 15.4V8.6L16 12l-6 3.4Z"/>
+        </svg>
+      `;
+    }
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M12 2.4c3.3 0 6 2.7 6 6v4.1c0 .7.5 1.1 1.3 1.4.8.3 1.5.6 1.5 1.4 0 .8-.9 1.3-2.1 1.7-.7.2-1.2.5-1.4 1.1-.3 1.1-1.2 1.7-2.6 1.9-.8.1-1.2.5-1.6 1.1-.6.9-1.7 1.5-3.1 1.5s-2.5-.6-3.1-1.5c-.4-.6-.8-1-1.6-1.1-1.4-.2-2.3-.8-2.6-1.9-.2-.6-.7-.9-1.4-1.1C.9 19.3 0 18.8 0 18c0-.8.7-1.1 1.5-1.4.8-.3 1.3-.7 1.3-1.4V8.4c0-3.3 2.7-6 6-6h3.2Zm0 2h-1.6A4.4 4.4 0 0 0 6 8.8v4.8c0 1.6-1.2 2.4-2.6 2.9.6.3 1.2.6 1.5 1.5.1.4.5.6 1 .7 1.4.2 2.4.9 3.1 1.9.2.3.7.6 1 .6s.8-.3 1-.6c.7-1 1.7-1.7 3.1-1.9.5-.1.9-.3 1-.7.3-.9.9-1.2 1.5-1.5-1.4-.5-2.6-1.3-2.6-2.9V8.8A4.4 4.4 0 0 0 13.6 4.4H12Z"/>
+      </svg>
+    `;
+  }
+
   function saveSocials(s) {
     writeJson(key, s);
   }
 
   function renderPreview(s) {
     const items = [
-      ["Instagram", s.instagram],
-      ["TikTok", s.tiktok],
-      ["YouTube", s.youtube],
-      ["Snapchat", s.snapchat],
-      ["X", s.x],
-      ["Facebook", s.facebook],
-    ].filter(([, v]) => v);
+      { key: "youtube", cls: "yt", label: "YouTube", href: s.youtube || "" },
+      { key: "snapchat", cls: "sc", label: "Snapchat", href: snapchatHref(s.snapchat || "") },
+      { key: "instagram", cls: "ig", label: "Instagram", href: s.instagram || "" },
+    ].filter((i) => i.href);
 
     if (!items.length) {
       preview.innerHTML = `<p class="muted">No socials saved yet.</p>`;
@@ -1604,26 +1630,19 @@ function onSocialPage() {
     preview.innerHTML = `
       <div class="social-row">
         ${items
-          .map(([label, value]) => {
-            const href =
-              label === "Snapchat" && !String(value).includes("://")
-                ? ""
-                : escapeText(value);
-            const text =
-              label === "Snapchat" && !String(value).includes("://")
-                ? `Snapchat: ${escapeText(value)}`
-                : label;
-            return href
-              ? `<a class="btn btn-ghost" href="${href}" target="_blank" rel="noreferrer">${escapeText(text)}</a>`
-              : `<span class="tag">${escapeText(text)}</span>`;
-          })
+          .map(
+            (i) =>
+              `<a class="social-app ${escapeText(i.cls)}" href="${escapeText(i.href)}" target="_blank" rel="noreferrer" aria-label="${escapeText(
+                i.label
+              )}" title="${escapeText(i.label)}">${iconSvg(i.key)}</a>`
+          )
           .join("")}
       </div>
     `;
   }
 
   const current = readSocials();
-  for (const name of ["instagram", "tiktok", "youtube", "snapchat", "x", "facebook"]) {
+  for (const name of ["instagram", "youtube", "snapchat"]) {
     const el = form.querySelector(`[name="${name}"]`);
     if (el && current[name]) el.value = current[name];
   }
@@ -1634,11 +1653,8 @@ function onSocialPage() {
     const data = collectForm(form);
     const next = {
       instagram: normalizeUrl(data.instagram),
-      tiktok: normalizeUrl(data.tiktok),
       youtube: normalizeUrl(data.youtube),
       snapchat: String(data.snapchat || "").trim(),
-      x: normalizeUrl(data.x),
-      facebook: normalizeUrl(data.facebook),
     };
     saveSocials(next);
     renderPreview(next);
@@ -2090,17 +2106,43 @@ function setupFooterSocials() {
 
   const key = "kickoffhub_socials_v1";
   const socials = readJson(key, {});
+  function snapchatHref(value) {
+    const v = String(value || "").trim();
+    if (!v) return "";
+    if (v.includes("://")) return v;
+    return `https://www.snapchat.com/add/${encodeURIComponent(v)}`;
+  }
+
+  function iconSvg(kind) {
+    if (kind === "instagram") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4A5.8 5.8 0 0 1 16.2 22H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8Zm4.2 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM17.4 6.2a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/>
+        </svg>
+      `;
+    }
+    if (kind === "youtube") {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path fill="currentColor" d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.6 4.6 12 4.6 12 4.6s-5.6 0-7.5.5A3 3 0 0 0 2.4 7.2 31.6 31.6 0 0 0 2 12a31.6 31.6 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.9.5 7.5.5 7.5.5s5.6 0 7.5-.5a3 3 0 0 0 2.1-2.1A31.6 31.6 0 0 0 22 12a31.6 31.6 0 0 0-.4-4.8ZM10 15.4V8.6L16 12l-6 3.4Z"/>
+        </svg>
+      `;
+    }
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M12 2.4c3.3 0 6 2.7 6 6v4.1c0 .7.5 1.1 1.3 1.4.8.3 1.5.6 1.5 1.4 0 .8-.9 1.3-2.1 1.7-.7.2-1.2.5-1.4 1.1-.3 1.1-1.2 1.7-2.6 1.9-.8.1-1.2.5-1.6 1.1-.6.9-1.7 1.5-3.1 1.5s-2.5-.6-3.1-1.5c-.4-.6-.8-1-1.6-1.1-1.4-.2-2.3-.8-2.6-1.9-.2-.6-.7-.9-1.4-1.1C.9 19.3 0 18.8 0 18c0-.8.7-1.1 1.5-1.4.8-.3 1.3-.7 1.3-1.4V8.4c0-3.3 2.7-6 6-6h3.2Zm0 2h-1.6A4.4 4.4 0 0 0 6 8.8v4.8c0 1.6-1.2 2.4-2.6 2.9.6.3 1.2.6 1.5 1.5.1.4.5.6 1 .7 1.4.2 2.4.9 3.1 1.9.2.3.7.6 1 .6s.8-.3 1-.6c.7-1 1.7-1.7 3.1-1.9.5-.1.9-.3 1-.7.3-.9.9-1.2 1.5-1.5-1.4-.5-2.6-1.3-2.6-2.9V8.8A4.4 4.4 0 0 0 13.6 4.4H12Z"/>
+      </svg>
+    `;
+  }
+
   const links = [];
   if (socials && typeof socials === "object") {
-    for (const [label, href] of Object.entries({
-      Instagram: socials.instagram,
-      TikTok: socials.tiktok,
-      YouTube: socials.youtube,
-      X: socials.x,
-      Facebook: socials.facebook,
-    })) {
-      if (href) links.push({ label, href });
-    }
+    const yt = String(socials.youtube || "").trim();
+    const sc = snapchatHref(socials.snapchat || "");
+    const ig = String(socials.instagram || "").trim();
+    if (yt) links.push({ key: "youtube", cls: "yt", label: "YouTube", href: yt });
+    if (sc) links.push({ key: "snapchat", cls: "sc", label: "Snapchat", href: sc });
+    if (ig) links.push({ key: "instagram", cls: "ig", label: "Instagram", href: ig });
   }
 
   const box = document.createElement("div");
@@ -2114,10 +2156,13 @@ function setupFooterSocials() {
       <p class="fine">Follow:</p>
       <div class="social-row">
         ${links
-          .map(
-            (l) =>
-              `<a class="btn btn-ghost" href="${escapeText(l.href)}" target="_blank" rel="noreferrer">${escapeText(l.label)}</a>`
-          )
+          .map((l) => {
+            return `<a class="social-app ${escapeText(l.cls)}" href="${escapeText(
+              l.href
+            )}" target="_blank" rel="noreferrer" aria-label="${escapeText(l.label)}" title="${escapeText(
+              l.label
+            )}">${iconSvg(l.key)}</a>`;
+          })
           .join("")}
       </div>
     `;

@@ -612,6 +612,54 @@ a:hover {
   align-items: center;
 }
 
+.social-app {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.social-app:hover {
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.30);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.social-app:focus {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.social-app svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.social-app.ig {
+  background: radial-gradient(circle at 25% 10%, rgba(255, 230, 0, 0.22), transparent 55%),
+    radial-gradient(circle at 75% 85%, rgba(255, 0, 105, 0.24), transparent 55%),
+    radial-gradient(circle at 20% 80%, rgba(110, 100, 255, 0.20), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.yt {
+  background: radial-gradient(circle at 55% 40%, rgba(255, 50, 50, 0.28), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
+.social-app.sc {
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 0, 0.22), transparent 55%),
+    rgba(0, 0, 0, 0.18);
+}
+
 .social-preview {
   display: grid;
   gap: 10px;
