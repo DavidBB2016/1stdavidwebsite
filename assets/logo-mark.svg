@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">DAVID'S football website logo mark</title>
+  <desc id="desc">A neon football badge with the letter D and a football.</desc>
+  <defs>
+    <linearGradient id="rainbow" x1="16" y1="16" x2="112" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00f5ff"/>
+      <stop offset="0.25" stop-color="#6ef3b3"/>
+      <stop offset="0.5" stop-color="#ffe95c"/>
+      <stop offset="0.75" stop-color="#ff5aa5"/>
+      <stop offset="1" stop-color="#8b5cff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="35%" cy="25%" r="70%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#03120c" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#000000" flood-opacity="0.45"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#6ef3b3" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="128" height="128" rx="30" fill="#07110c"/>
+  <rect x="6" y="6" width="116" height="116" rx="26" fill="url(#rainbow)" opacity="0.95"/>
+  <rect x="12" y="12" width="104" height="104" rx="22" fill="#08170f"/>
+  <rect x="12" y="12" width="104" height="104" rx="22" fill="url(#glow)"/>
+
+  <path
+    d="M36 96V32h27c9.8 0 17.8 3 24 8.9 6.2 5.9 9.3 13.6 9.3 23.1S93.2 81.3 87 87.1C80.8 93 72.8 96 63 96H36Zm17.7-16.1h8.6c4.9 0 8.8-1.4 11.8-4.3 3-2.9 4.5-6.8 4.5-11.6s-1.5-8.7-4.5-11.6c-3-2.9-6.9-4.3-11.8-4.3h-8.6v31.8Z"
+    fill="#f8fff9"
+    filter="url(#shadow)"
+  />
+
+  <g transform="translate(72 70)">
+    <circle cx="18" cy="18" r="18" fill="#f8fff9"/>
+    <path d="M18 5 25 10.2 22.3 18H13.7L11 10.2 18 5Z" fill="#07110c"/>
+    <path d="M13.7 18 8 22.1 10.5 30H18V18h-4.3Z" fill="#07110c"/>
+    <path d="M22.3 18H18v12h7.5L28 22.1 22.3 18Z" fill="#07110c"/>
+    <path d="M11 10.2 5 13.5 8 22.1 13.7 18 11 10.2Z" fill="#07110c"/>
+    <path d="M25 10.2 30.9 13.5 28 22.1 22.3 18 25 10.2Z" fill="#07110c"/>
+    <circle cx="18" cy="18" r="17" fill="none" stroke="#07110c" stroke-width="2"/>
+  </g>
+</svg>
