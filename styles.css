@@ -1014,6 +1014,15 @@ a:hover {
   letter-spacing: -0.2px;
 }
 
+.hero-logo {
+  display: block;
+  width: min(100%, 420px);
+  height: auto;
+  margin: 0 0 18px;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.30);
+}
+
 .lede {
   margin: 0 0 18px;
   max-width: 54ch;
