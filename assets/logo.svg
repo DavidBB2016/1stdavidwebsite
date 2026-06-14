@@ -1,34 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" role="img" aria-labelledby="title desc">
-  <title id="title">DAVID'S football website logo</title>
-  <desc id="desc">A neon football badge next to the words DAVID'S football website.</desc>
+  <title id="title">DAVID'S football website World Cup style logo</title>
+  <desc id="desc">An original football tournament trophy badge next to DAVID'S football website.</desc>
   <defs>
-    <linearGradient id="rainbow" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+    <linearGradient id="edge" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#00f5ff"/>
-      <stop offset="0.25" stop-color="#6ef3b3"/>
-      <stop offset="0.5" stop-color="#ffe95c"/>
-      <stop offset="0.75" stop-color="#ff5aa5"/>
+      <stop offset="0.28" stop-color="#6ef3b3"/>
+      <stop offset="0.55" stop-color="#ffe95c"/>
+      <stop offset="0.78" stop-color="#ff5aa5"/>
       <stop offset="1" stop-color="#8b5cff"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="58" y1="38" x2="116" y2="146" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff4a8"/>
+      <stop offset="0.45" stop-color="#ffd35a"/>
+      <stop offset="1" stop-color="#f6943d"/>
+    </linearGradient>
+    <linearGradient id="green" x1="60" y1="102" x2="126" y2="152" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6ef3b3"/>
+      <stop offset="1" stop-color="#098f68"/>
     </linearGradient>
   </defs>
 
   <rect width="640" height="180" rx="28" fill="#07110c"/>
   <g transform="translate(26 26)">
-    <rect width="128" height="128" rx="30" fill="url(#rainbow)"/>
+    <rect width="128" height="128" rx="30" fill="url(#edge)"/>
     <rect x="8" y="8" width="112" height="112" rx="25" fill="#08170f"/>
-    <path d="M36 96V32h27c9.8 0 17.8 3 24 8.9 6.2 5.9 9.3 13.6 9.3 23.1S93.2 81.3 87 87.1C80.8 93 72.8 96 63 96H36Zm17.7-16.1h8.6c4.9 0 8.8-1.4 11.8-4.3 3-2.9 4.5-6.8 4.5-11.6s-1.5-8.7-4.5-11.6c-3-2.9-6.9-4.3-11.8-4.3h-8.6v31.8Z" fill="#f8fff9"/>
-    <circle cx="92" cy="88" r="20" fill="#f8fff9"/>
-    <path d="M92 74 100 80 97 89H87L84 80 92 74Z" fill="#07110c"/>
-    <path d="M87 89 80 94 83 103H92V89h-5Z" fill="#07110c"/>
-    <path d="M97 89H92v14h9L104 94 97 89Z" fill="#07110c"/>
+    <path d="M64 18c17 0 31 12.8 31 28.6 0 12.3-8.5 22.8-20.5 26.8L84 99H44l9.5-25.6C41.5 69.4 33 58.9 33 46.6 33 30.8 47 18 64 18Z" fill="url(#gold)"/>
+    <path d="M40 46c7 8 15 12 24 12s17-4 24-12" fill="none" stroke="#fff8cf" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+    <path d="M48 33c4 10 10 15 16 15s12-5 16-15" fill="none" stroke="#fff8cf" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M50 78h28l9 25H41l9-25Z" fill="url(#green)"/>
+    <path d="M38 103h52l7 11H31l7-11Z" fill="#f8fff9"/>
+    <path d="M44 108h40" fill="none" stroke="#07110c" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="92" cy="35" r="14" fill="#f8fff9"/>
+    <path d="M92 25 97 29 95 35H89L87 29 92 25Z" fill="#07110c"/>
+    <path d="M89 35 84 39 86 45H92V35h-3Z" fill="#07110c"/>
+    <path d="M95 35H92v10h6l2-6-5-4Z" fill="#07110c"/>
   </g>
 
-  <text x="182" y="82" fill="#f8fff9" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700">
+  <text x="182" y="78" fill="#f8fff9" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700">
     DAVID'S
   </text>
-  <text x="182" y="124" fill="#d8efe3" font-family="Verdana, Arial, sans-serif" font-size="28" font-weight="700">
+  <text x="182" y="119" fill="#d8efe3" font-family="Verdana, Arial, sans-serif" font-size="28" font-weight="700">
     football website
   </text>
-  <text x="184" y="151" fill="#95b8a8" font-family="Verdana, Arial, sans-serif" font-size="14" font-weight="700">
-    Friendlies • Tournaments • Live scores
+  <text x="184" y="148" fill="#95b8a8" font-family="Verdana, Arial, sans-serif" font-size="14" font-weight="700">
+    World tournaments • Friendlies • Live scores
   </text>
 </svg>
